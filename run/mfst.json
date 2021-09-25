@@ -1,0 +1,13 @@
+{
+	"name": "CodeRunner",
+	"icons": [{
+		"src": "/run/icon.png",
+		"type": "image/png",
+		"sizes": "256x256",
+		"purpose": "any maskable"
+	}],
+	"start_url": "/run/",
+	"display": "standalone",
+	"background_color": "#bdb",
+	"theme_color": "#bdb"
+}

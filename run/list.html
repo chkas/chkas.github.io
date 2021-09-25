@@ -1,0 +1,2220 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Code runner - apps & games</title>
+
+<style>
+body { 
+	background:#222; 
+	color:#fff;
+	max-width:800px;
+}
+a { color:#fff; }
+
+h3 {background-color:#555;padding:5px;padding-left:12px}
+</style>
+
+<h3>Apps & Games</h3>
+
+<script>
+window.name = "easylang_games"
+var s = []
+function inst(id) {
+	window.open(location.origin + "/run/?code=" + encodeURIComponent(s[id]), "_self")
+//	window.open(location.origin + "/run/?code=" + encodeURIComponent(s[id]), "easylang_run")
+}
+s[0] = `# 1x1 trainer
+# 
+len n[] 10
+len m[] 10
+subr init_vars
+  n = 0
+  m = 0
+  state = 0
+  sz = 10
+  ind = -1
+  t = 0
+  row = -1
+  res = 0
+.
+func disp col s$ . .
+  set_color col
+  move_pen 3 3
+  draw_rect 94 21
+  set_color 888
+  move_pen 7 7
+  set_textsize 12
+  draw_text s$
+.
+func show_quest . .
+  j = random sz
+  sz -= 1
+  if row < 10
+    n = n[j]
+    n[j] = n[sz]
+    n[sz] = n
+    m = row
+  else
+    n = n[sz]
+    m = m[sz]
+  .
+  call disp 030 n & " * " & m & " = _"
+  res = 0
+.
+func sel_row . .
+  if ind <= 10
+    t = sys_time
+    row = ind
+    if ind < 10
+      for i range 10
+        n[i] = i + 1
+      .
+    else
+      for i range 10
+        n[i] = random 8 + 2
+        m[i] = random 8 + 2
+      .
+    .
+    sz = 10
+    call show_quest
+  .
+.
+func draw_key . .
+  s$ = str_chr (ind + 48)
+  h = ind
+  if h < 10 and h > 0
+    h -= 1
+    x = h mod 3 * 24 + 3
+    y = h div 3 * 24 + 3 + 24
+  else
+    x = 3 * 24 + 3
+    if h = 0
+      y = 1
+    elif h = 10
+      y = 0
+      s$ = "×"
+    else
+      y = 2
+      s$ = "✓"
+    .
+    y = y * 24 + 3 + 24
+  .
+  move_pen x y
+  draw_rect 22 22
+  move_pen x + 5 y + 3
+  set_color 888
+  set_textsize 16
+  draw_text s$
+.
+set_background 010
+func init . .
+  call init_vars
+  clear_screen
+  for ind range 12
+    set_color 020
+    call draw_key
+  .
+  ind = -1
+  call disp 030 "Which row?"
+.
+func sel_inp . .
+  if ind = 11
+    state = 1
+    if n * m = res
+      col = 050
+      set_timer 0.5
+    else
+      sz += 1
+      col = 500
+      set_timer 5
+    .
+    h$ = n * m
+  else
+    if ind = 10
+      res = res div 10
+      h$ = res
+      if res = 0
+        h$ = "_"
+      .
+    else
+      if res >= 10
+        res = 0
+      .
+      res = res * 10 + ind
+      h$ = res
+    .
+    col = 030
+  .
+  call disp col n & " * " & m & " = " & h$
+.
+func handle_key2 . .
+  if row = -1
+    call sel_row
+  else
+    call sel_inp
+  .
+.
+func handle_key . .
+  c = mouse_x div 25
+  r = (mouse_y - 25) div 25
+  if c < 3
+    ind = r * 3 + c + 1
+  else
+    if r = 1
+      ind = 0
+    elif r = 0
+      ind = 10
+    else
+      ind = 11
+    .
+  .
+  set_color 040
+  call draw_key
+  call handle_key2
+.
+on key
+  ind = str_ord keyb_key - 48
+  if state = 0
+    if ind >= 0 and ind <= 9
+    elif ind = 21
+      ind = 11
+    elif ind = 18 or ind = 20
+      ind = 10
+    else
+      ind = -1
+    .
+    if ind >= 0
+      call handle_key2
+    .
+  elif state = 3
+    call init
+  .
+.
+on mouse_down
+  if state = 3
+    call init
+  elif state = 0 and mouse_y >= 25
+    call handle_key
+  .
+.
+on mouse_up
+  if ind >= 0
+    set_color 020
+    call draw_key
+    ind = -1
+  .
+.
+func done . .
+  t = floor (sys_time - t)
+  move_pen 3 3
+  set_color 030
+  draw_rect 94 94
+  set_color 888
+  move_pen 10 6
+  set_textsize 10
+  draw_text "Well done"
+  move_pen 10 20
+  s$ = "All"
+  if row < 10
+    s$ = row
+  .
+  draw_text "Row: " & s$
+  move_pen 10 34
+  draw_text "Time: " & t
+  if t <= 60
+    move_pen 65 70
+    set_color 983
+    draw_circle 19
+    set_color 000
+    move_pen 58 63
+    draw_circle 2
+    move_pen 72 63
+    draw_circle 2
+    set_linewidth 2
+    draw_curve [ 58 77 65 83 72 77 ]
+  .
+.
+on timer
+  if state = 2
+    state = 3
+  elif sz = 0
+    state = 2
+    set_timer 2
+    call done
+  else
+    call show_quest
+    state = 0
+  .
+.
+call init
+
+`
+s[1] = `# Catch the ball
+# 
+subr new_ball
+  x_pos = 50
+  y_pos = 50
+  x_speed = 0.4 + 0.2 * points + (randomf - 0.5)
+  y_speed = 0.4 + 0.2 * points + (randomf - 0.5)
+  color = 0
+  for j range 3
+    color = color * 10 + random 8 + 2
+  .
+.
+subr start
+  rad = 16
+  mouse_cursor 1
+  points = 0
+  lives = 3
+  set_textsize 6
+  call new_ball
+.
+set_background 000
+subr backgr
+  clear_screen
+  set_color 222
+  move_pen 0 0
+  draw_line 100 0
+  draw_line 100 100
+  draw_line 0 100
+  draw_line 0 0
+  set_color 995
+  move_pen 4 4
+  draw_text "Points: " & points
+  move_pen 4 12
+  draw_text "Lives: " & lives
+.
+on animate
+  if lives > 0
+    call backgr
+    set_color color
+    move_pen x_pos y_pos
+    draw_circle rad
+    x_pos += x_speed
+    y_pos += y_speed
+    if x_pos < rad or x_pos > 100 - rad
+      x_speed = -x_speed
+    .
+    if y_pos < rad or y_pos > 100 - rad
+      y_speed = -y_speed
+    .
+  .
+.
+subr catch
+  dx = abs (mouse_x - x_pos)
+  dy = abs (mouse_y - y_pos)
+  if dx * dx + dy * dy < rad * rad
+    # play_sound [ 440 0.1 494 0.1 523 0.2 ]
+    points += 1
+    if points mod 3 = 0
+      lives += 1
+    .
+    call new_ball
+  else
+    lives -= 1
+    # play_sound [ 262 0.2 ]
+    if lives = 0
+      call backgr
+      set_textsize 10
+      move_pen 20 40
+      draw_text "Game over"
+      mouse_cursor 0
+    .
+  .
+.
+on timer
+  locked = 0
+.
+on mouse_down
+  if locked = 0
+    locked = 1
+    set_timer 1
+    if lives = 0
+      call start
+    else
+      call catch
+    .
+  .
+.
+call start
+
+`
+s[2] = `# Hangman
+#
+if sysfunc "lang" = "de"
+  alpha$[] = str_chars "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ"
+  words$[] = [ "MAUS" "KATZE" "HUND" "ELEFANT" "PFERD" "NASHORN" "SPINNE" "AMEISE" "TIGER" "GEPARD" "SCHLANGE" "KUH" "SCHWEIN" "KROKODIL" "RATTE" "HUHN" "GIRAFFE" "SKORPION" "WAL" "DELFIN" "EIDECHSE" "FLIEGE" "RABE" "ADLER" "AMSEL" "SPECHT" "PINGUIN" "ESEL" "ZIEGE" "SCHAF" "ENTE" "SCHWAN" "MAULWURF" "BIENE" "WESPE" "ZECKE" "SCHNECKE" "FUCHS" "WOLF" "HAI" "FORELLE" "TAUBE" "BÄR" "DACHS" "EULE" "ERDMÄNNCHEN" "EICHHÖRNCHEN" "FROSCH" "FLEDERMAUS" "GOLDFISCH" "GEIER" "GANS" "GORILLA" "SCHIMPANSE" "HORNISSE" "HAMSTER" "HASE" "REH" "HIRSCH" "MURMELTIER" "IGEL" "KÄFER" "KAMEL" "KÄNGURU" "KREBS" "LÖWE" "LUCHS" "LAMA" "MOLCH" "NASHORN" "PAPAGEI" "PANDBÄR" "PAVIAN" "QUALLE" "REGENWURM" "SCHILDKRÖTE" "STINKTIER" "SEEPFERDCHEN" "ZEBRA" "BIBER" "ANTILOPE" "SEESTERN" "MUSCHEL" "CHAMÄLEON" "FAULTIER" "FLAMINGO" "KANINCHEN" "KOALABÄR" "KRÖTE" ]
+else
+  alpha$[] = str_chars "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  words$[] = [ "MOUSE" "CAT" "DOG" "ELEPHANT" "HORSE" "RHINO" "SPIDER" "ANT" "TIGER" "CHEETAH" "SNAKE" "COW" "PIG" "CROCODILE" "RAT" "MONKEY" "CHICKEN" "GIRAFFE" "SCORPION" "WHALE" "DOLPHIN" "LIZARD" "FLY" "RAVEN" "EAGLE" "BLACKBIRD" "WOODPECKER" "PENGUIN" "DONKEY" "GOAT" "SHEEP" "DUCK" "SWAN" "MOLE" "BEE" "WASP" "TICK" "SNAIL" "FOX" "WOLF" "SHARK" "TROUT" "DOVE" "BEAR" "BADGER" "OWL" "MEERKAT" "SQUIRREL" "FROG" "BAT" "GOLDFISH" "VULTURE" "GOOSE" "GORILLA" "CHIMPANZEE" "HORNET" "HAMSTER" "HARE" "DEER" "MARMOT" "HEDGEHOG" "BEETLE" "CAMEL" "KANGAROO" "CRAB" "LION" "LYNX" "LLAMA" "NEWT" "RHINO" "PARROT" "PANDA" "BABOON" "JELLYFISH" "EARTHWORM" "TURTLE" "SKUNK" "SEAHORSE" "ZEBRA" "BEAVER" "ANTELOPE" "STARFISH" "MUSSEL" "CHAMELEON" "SLOTH" "FLAMINGO" "RABBIT" "KOALA" "TOAD" ]
+.
+len sel[] len alpha$[]
+# 
+subr init
+  for i range len sel[]
+    sel[i] = 0
+  .
+  w$[] = str_chars words$[random len words$[]]
+  set_textsize 10
+  game_stat = 0
+.
+set_background 000
+func draw . .
+  clear_screen
+  set_linewidth 1
+  set_color 997
+  for i range len w$[]
+    move_pen 4 + i * 8 93
+    draw_line 10 + i * 8 93
+  .
+  try = 0
+  found = 0
+  for ind range len sel[]
+    r = ind div 5
+    c = ind mod 5
+    move_pen 3 + c * 11 3 + r * 12
+    set_color 040
+    draw_rect 10 11
+    set_color 997
+    k$ = alpha$[ind]
+    if sel[ind] = 0
+      move_pen 4.5 + c * 11 4 + r * 12
+      draw_text k$
+    else
+      in = 0
+      for pos range len w$[]
+        if w$[pos] = k$
+          in = 1
+          move_pen 4 + pos * 8 83
+          draw_text w$[pos]
+          found += 1
+        .
+      .
+      if in = 0
+        try += 1
+      .
+    .
+  .
+  # 
+  if try > 0
+    move_pen 65 60
+    draw_line 65 10
+  .
+  if try > 1
+    draw_line 85 10
+  .
+  if try > 2
+    draw_line 85 15
+  .
+  if try > 3
+    move_pen 85 20
+    draw_circle 6
+    set_color -2
+    draw_circle 5
+    set_color 997
+  .
+  if try > 4
+    move_pen 83 18
+    draw_circle 0.8
+  .
+  if try > 5
+    move_pen 87 18
+    draw_circle 0.8
+  .
+  if try > 6
+    set_linewidth 1
+    move_pen 84 22
+    draw_line 86 22
+  .
+  if try > 7
+    move_pen 85 26
+    draw_line 85 40
+  .
+  if try > 8
+    move_pen 78 27
+    draw_line 85 30
+  .
+  if try > 9
+    draw_line 92 27
+  .
+  if try > 10
+    move_pen 78 47
+    draw_line 85 40
+  .
+  if try > 11
+    draw_line 92 47
+    game_stat = 1
+    set_timer 1
+  .
+  if found = len w$[]
+    game_stat = 2
+    set_timer 0.5
+  .
+.
+on timer
+  game_stat = 3
+.
+func search_letter . .
+  c = (mouse_x - 3) div 11
+  r = (mouse_y - 3) div 12
+  ind = c + r * 5
+  if ind < len sel[] and sel[ind] = 0
+    sel[ind] = 1
+    call draw
+    if game_stat > 0
+      for i range len w$[]
+        move_pen 4 + i * 8 83
+        draw_text w$[i]
+      .
+      move_pen 60 70
+      set_textsize 8
+      if game_stat = 1
+        draw_text "SORRY!"
+        # play_sound [ 330 0.2 294 0.2 262 0.4 ]
+      else
+        draw_text "SUPER!"
+        # play_sound [ 440 0.1 494 0.1 523 0.2 ]
+      .
+    .
+  .
+.
+on mouse_down
+  if game_stat = 0
+    if mouse_x < 58 and mouse_x > 3 and mouse_y < 75 and mouse_y > 3
+      call search_letter
+    .
+  elif game_stat = 3
+    call init
+    call draw
+  .
+.
+call init
+call draw
+
+`
+s[3] = `# Learning clock
+#
+func draw hour min sec . .
+  move_pen 69 92
+  clear_screen
+  if hour < 10
+    s$ = "0"
+  .
+  s$ &= hour & ":"
+  if min < 10
+    s$ &= "0"
+  .
+  s$ &= min & ":"
+  if sec < 10
+    s$ &= "0"
+  .
+  s$ &= sec
+  set_textsize 6
+  set_color -1
+  draw_text s$
+  # dial
+  set_color 333
+  move_pen 50 50
+  draw_circle 45
+  set_color 797
+  draw_circle 44
+  set_color 333
+  for i range 60
+    a = i * 6
+    move_pen 50 + sin a * 40 50 - cos a * 40
+    draw_circle 0.25
+  .
+  set_textsize 7
+  for i range 12
+    a = i * 30
+    move_pen 50 + sin a * 40 50 - cos a * 40
+    draw_circle 1
+    if i = 0
+      move_pen 45 47 - 35
+      draw_text 12
+    else
+      move_pen 48 + sin a * 35 47 - cos a * 35
+      draw_text i
+    .
+  .
+  # hour
+  set_linewidth 2
+  set_color 000
+  if hour > 12
+    hour -= 12
+  .
+  a = (hour * 60 + min) / 2
+  move_pen 50 50
+  draw_line 50 + sin a * 32 50 - cos a * 32
+  # min
+  set_linewidth 1.5
+  a = (sec + min * 60) / 10
+  move_pen 50 50
+  draw_line 50 + sin a * 40 50 - cos a * 40
+  # sec  
+  set_linewidth 1
+  set_color 700
+  a = sec * 6
+  move_pen 50 50
+  draw_line 50 + sin a * 40 50 - cos a * 40
+.
+on timer
+  if t <> floor sys_time
+    t = floor sys_time
+    h$ = time_str t
+    sec = number substr h$ 17 2
+    min = number substr h$ 14 2
+    hour = number substr h$ 11 2
+    call draw hour min sec
+  .
+  set_timer 0.1
+.
+set_timer 0
+
+`
+s[4] = `# My memory
+# 
+func draw_square ind col s$ . .
+  x = ind mod 4 * 24 + 3
+  y = ind div 4 * 24 + 3
+  set_color col
+  move_pen x y
+  draw_rect 22 22
+  move_pen x + 5 y + 3
+  set_color 000
+  draw_text s$
+end
+subr init_vars
+  card1 = -1
+  card2 = -1
+  opencards = 0
+  time0 = sys_time
+end
+cards$[] = str_chars "AABBDDEEFFGGHHII"
+len open[] 16
+set_background 000
+func init . .
+  call init_vars
+  clear_screen
+  # display covered cards
+  for i range 16
+    open[i] = 0
+    call draw_square i 353 ""
+  end
+  # shuffle
+  for i = 2 to 16
+    r = random i
+    swap cards$[r] cards$[i - 1]
+  end
+end
+func open ind . .
+  open[ind] = 1
+  call draw_square ind 575 cards$[ind]
+  if card1 = -1
+    # first card
+    card1 = ind
+  else
+    # second card
+    card2 = ind
+    if cards$[card2] <> cards$[card1]
+      # cards are covered after one second
+      set_timer 1
+    else
+      # two matching cards found
+      card1 = -1
+      card2 = -1
+      opencards += 2
+      if opencards = 16
+        # done
+        clear_screen
+        move_pen 5 20
+        set_color 575
+        draw_text "Time: " & floor (sys_time - time0)
+      end
+    end
+  end
+end
+on timer
+  # cover cards
+  open[card1] = 0
+  call draw_square card1 353 ""
+  card1 = -1
+  open[card2] = 0
+  call draw_square card2 353 ""
+  card2 = -1
+end
+func search_card . .
+  c = mouse_x div 25
+  r = mouse_y div 25
+  ind = r * 4 + c
+  if open[ind] = 0
+    call open ind
+  end
+end
+on mouse_down
+  if opencards = 16
+    # new game
+    call init
+  elif card2 = -1
+    call search_card
+  end
+end
+set_textsize 16
+call init
+
+`
+s[5] = `# Mastermind:w90
+# 
+col[] = [ 802 990 171 229 950 808 ]
+len code[] 4
+len guess[] 4
+# 
+subr init_vars
+  row = 7
+.
+func draw_rate r black white . .
+  for j range 2
+    for c range 2
+      move_pen c * 3.5 + 71.5 r * 11.5 + 10.4 + j * 3.5
+      if black > 0
+        set_color 000
+        draw_circle 1.4
+        black -= 1
+      elif white > 0
+        set_color 999
+        draw_circle 1.4
+        white -= 1
+      else
+        set_color 310
+        draw_circle 0.7
+      .
+    .
+  .
+.
+func show_code . .
+  set_color 531
+  move_pen 22 0
+  draw_rect 46 8
+  for i range 4
+    move_pen i * 8 + 28 3
+    set_color col[code[i]]
+    draw_circle 2
+  .
+.
+func draw_guess . .
+  for c range 4
+    move_pen c * 12 + 20 row * 11.5 + 12
+    set_color col[guess[c]]
+    draw_circle 3.8
+  .
+.
+func next_row . .
+  set_color 420
+  set_linewidth 11
+  move_pen 17 row * 11.5 + 12
+  draw_line 60 row * 11.5 + 12
+  call draw_guess
+  move_pen 73.5 row * 11.5 + 12
+  set_color 310
+  draw_circle 5.0
+  set_color 753
+  move_pen 71.5 row * 11.5 + 8.5
+  set_textsize 7
+  draw_text "✓"
+.
+func rate . .
+  move_pen 73.5 row * 11.5 + 12
+  set_color 531
+  draw_circle 5.2
+  c[] = code[]
+  g[] = guess[]
+  for i range 4
+    if c[i] = g[i]
+      black += 1
+      c[i] = -1
+      g[i] = -2
+    .
+  .
+  for i range 4
+    for j range 4
+      if c[i] = g[j]
+        white += 1
+        c[i] = -1
+        g[j] = -2
+      .
+    .
+  .
+  call draw_rate row black white
+  set_color 531
+  set_linewidth 12
+  move_pen 17 row * 11.5 + 12
+  draw_line 60 row * 11.5 + 12
+  call draw_guess
+  row -= 1
+  if black = 4
+    row = -1
+  .
+  if row = -1
+    call show_code
+    set_timer 2
+  else
+    call next_row
+  .
+.
+on timer
+  row = -2
+.
+func new . .
+  call init_vars
+  for i range 4
+    code[i] = random 6
+  .
+  set_color 531
+  move_pen 10 10
+  draw_rect 70 80
+  set_linewidth 10
+  move_pen 5 5
+  draw_line 5 95
+  draw_line 85 95
+  draw_line 85 5
+  draw_line 5 5
+  set_color 310
+  set_linewidth 7
+  move_pen 28 3.5
+  draw_line 58 3.5
+  move_pen 30 1.5
+  set_color 864
+  set_textsize 4
+  draw_text "Mastermind"
+  set_color 310
+  set_linewidth 0.5
+  move_pen 10 10
+  draw_line 10 96
+  move_pen 67 10
+  draw_line 67 96
+  move_pen 80 10
+  draw_line 80 96
+  for r range 8
+    for c range 4
+      move_pen c * 12 + 20 r * 11.5 + 12
+      draw_circle 2
+    .
+    call draw_rate r 0 0
+  .
+  guess[0] = 0
+  guess[1] = 0
+  guess[2] = 1
+  guess[3] = 1
+  call next_row
+.
+func do_move . .
+  c = (mouse_x - 15) div 12
+  guess[c] = (guess[c] + 1) mod 6
+  call draw_guess
+.
+on mouse_down
+  if row = -2
+    call new
+  elif mouse_y > row * 11.5 + 7 and mouse_y < row * 11.5 + 17 and row >= 0
+    if mouse_x > 15 and mouse_x < 61
+      call do_move
+    elif mouse_x > 67 and mouse_x < 80
+      call rate
+    .
+  .
+.
+call new
+
+`
+s[6] = `# Math trainer
+# 
+ind = 0
+q$ = ""
+subr init_vars
+  resok = 0
+  res = 0
+  t = sys_time
+  state = 1
+  op = ind
+  if op < 2
+    todo = 10
+  else
+    todo = 5
+  .
+.
+func disp col s$ . .
+  set_color col
+  move_pen 3 3
+  draw_rect 94 21
+  set_color 888
+  move_pen 7 7
+  set_textsize 12
+  draw_text s$
+.
+func show_quest . .
+  if res = resok
+    if op = 0
+      a = random 8 + 2
+      b = random 8 + 2
+      q$ = a & " * " & b & " = "
+      resok = a * b
+    elif op = 1
+      b = random 8 + 2
+      resok = random 8 + 2
+      a = b * resok
+      q$ = a & " / " & b & " = "
+    elif op = 2
+      a = random 77 + 11
+      b = random (89 - a) + 11
+      q$ = a & " + " & b & " = "
+      resok = a + b
+    elif op = 3
+      a = random 70 + 30
+      b = random (a - 11) + 11
+      q$ = a & " - " & b & " = "
+      resok = a - b
+    .
+  .
+  call disp 030 q$ & "_"
+  res = 0
+.
+func draw_key c ind . .
+  set_color c
+  s$ = str_chr (ind + 48)
+  h = ind
+  if h < 10 and h > 0
+    h -= 1
+    x = h mod 3 * 24 + 3
+    y = h div 3 * 24 + 3 + 24
+  else
+    x = 3 * 24 + 3
+    if h = 0
+      y = 1
+    elif h = 10
+      y = 0
+      s$ = "×"
+    else
+      y = 2
+      s$ = "✓"
+    .
+    y = y * 24 + 3 + 24
+  .
+  move_pen x y
+  draw_rect 22 22
+  move_pen x + 5 y + 3
+  set_color 888
+  set_textsize 16
+  draw_text s$
+.
+set_background 010
+func start . .
+  call init_vars
+  clear_screen
+  for ind range 12
+    call draw_key 020 ind
+  .
+  call show_quest
+.
+func handle_key2 . .
+  if ind = 11
+    state = 2
+    if res = resok
+      col = 050
+      todo -= 1
+      set_timer 0.5
+    else
+      col = 500
+      todo += 1
+      set_timer 5
+    .
+    call disp col q$ & resok
+  else
+    if ind = 10
+      res = res div 10
+      h$ = res
+      if res = 0
+        h$ = "_"
+      .
+    else
+      if res >= 10
+        res = 0
+      .
+      res = res * 10 + ind
+      h$ = res
+    .
+    call disp 030 q$ & h$
+  .
+.
+func handle_key . .
+  c = mouse_x div 25
+  r = (mouse_y - 25) div 25
+  if c < 3
+    ind = r * 3 + c + 1
+  else
+    if r = 1
+      ind = 0
+    elif r = 0
+      ind = 10
+    else
+      ind = 11
+    .
+  .
+  call draw_key 040 ind
+  call handle_key2
+.
+menu$[] = [ "Multiply" "Divide" "Add" "Subtract" ]
+func draw_menu_key col i . .
+  y = i * 24 + 3
+  move_pen 3 y
+  set_color col
+  draw_rect 94 22
+  move_pen 8 y + 4
+  set_color 888
+  draw_text menu$[i]
+.
+func draw_menu . .
+  clear_screen
+  set_textsize 14
+  for i range 4
+    call draw_menu_key 020 i
+  .
+  state = 0
+.
+on key
+  ind = str_ord keyb_key - 48
+  if state = 1
+    if ind >= 0 and ind <= 9
+    elif ind = 21
+      ind = 11
+    elif ind = 18 or ind = 20
+      ind = 10
+    else
+      ind = -1
+    .
+    if ind >= 0
+      call handle_key2
+    .
+  elif state = 0
+    if ind >= 1 and ind <= 4
+      ind -= 1
+      call start
+    .
+  elif state = 4
+    call draw_menu
+  .
+.
+on mouse_down
+  if state = 0
+    ind = mouse_y div 25
+    call draw_menu_key 030 ind
+  elif state = 1 and mouse_y >= 25
+    call handle_key
+  elif state = 4
+    call draw_menu
+  .
+.
+on mouse_up
+  if ind >= 0
+    if state = 0
+      call start
+    elif state = 1 or state = 2
+      call draw_key 020 ind
+    .
+    ind = -1
+  .
+.
+subr draw_smiley
+  move_pen 65 70
+  set_color 983
+  draw_circle 19
+  set_color 000
+  move_pen 58 63
+  draw_circle 2
+  move_pen 72 63
+  draw_circle 2
+  set_linewidth 2
+  draw_curve [ 58 77 65 83 72 77 ]
+.
+func show_result . .
+  state = 3
+  set_timer 2
+  t = floor (sys_time - t)
+  move_pen 3 3
+  set_color 030
+  draw_rect 94 94
+  set_color 888
+  move_pen 10 8
+  set_textsize 10
+  draw_text "Well done"
+  move_pen 10 24
+  draw_text "Time: " & t
+  if t <= 60
+    call draw_smiley
+  .
+.
+on timer
+  if state = 3
+    state = 4
+  elif state = 2 and todo = 0
+    call show_result
+  elif state = 2
+    call show_quest
+    state = 1
+  .
+.
+call draw_menu
+
+`
+s[7] = `# Minesweeper
+# 
+len cell[] 56
+len cnt[] 56
+len flag[] 56
+# 
+subr initvars
+  state = 0
+  ticks = 0
+  indx = -1
+  no_time = 0
+.
+func getind r c . ind .
+  ind = -1
+  if r >= 0 and r <= 6 and c >= 0 and c <= 7
+    ind = r * 8 + c
+  .
+.
+func draw_cell ind h . .
+  r = ind div 8
+  c = ind mod 8
+  x = c * 12 + 2.5
+  y = r * 12 + 14.5
+  move_pen x y
+  draw_rect 11 11
+  if h > 0
+    # count
+    move_pen x + 3 y + 2
+    set_color 000
+    draw_text h
+  elif h = -3
+    # flag
+    x += 4
+    set_color 000
+    set_linewidth 0.8
+    move_pen x y + 3
+    draw_line x y + 8
+    set_color 600
+    set_linewidth 2
+    move_pen x + 0.5 y + 4
+    draw_line x + 2 y + 4
+  elif h <> 0
+    # mine
+    set_color 333
+    if h = -2
+      set_color 800
+    .
+    move_pen x + 5 y + 6
+    draw_circle 3
+    draw_line x + 8 y + 2
+  .
+.
+func open ind . .
+  if ind <> -1 and cell[ind] = 0
+    cell[ind] = 2
+    flag[ind] = 0
+    set_color 686
+    call draw_cell ind cnt[ind]
+    if cnt[ind] = 0
+      r0 = ind div 8
+      c0 = ind mod 8
+      for r = r0 - 1 to r0 + 1
+        for c = c0 - 1 to c0 + 1
+          if r <> r0 or c <> c0
+            call getind r c ind
+            call open ind
+          .
+        .
+      .
+    .
+  .
+.
+func show_mines m . .
+  for ind range 56
+    if cell[ind] = 1
+      set_color 686
+      if m = -1
+        set_color 353
+      .
+      call draw_cell ind m
+    .
+  .
+.
+func outp col s$ . .
+  move_pen 2.5 2
+  set_color col
+  draw_rect 59 11
+  set_color 000
+  move_pen 5 4.5
+  draw_text s$
+.
+func upd_info . .
+  nm = 0
+  nc = 0
+  for i range 56
+    nm += flag[i]
+    if cell[i] < 2
+      nc += 1
+    .
+  .
+  if nc = 8
+    call outp 484 "Well done"
+    call show_mines -1
+    state = 1
+  else
+    call outp 464 8 - nm & " mines left"
+  .
+.
+func test ind . .
+  if cell[ind] < 2 and flag[ind] = 0
+    if cell[ind] = 1
+      call show_mines -1
+      set_color 686
+      call draw_cell ind -2
+      call outp 844 "B O O M !"
+      state = 1
+    else
+      call open ind
+      call upd_info
+    .
+  .
+.
+set_background 676
+func start . .
+  clear_screen
+  set_color 353
+  for ind range 56
+    cnt[ind] = 0
+    cell[ind] = 0
+    flag[ind] = 0
+    call draw_cell ind 0
+  .
+  n = 8
+  while n > 0
+    c = random 8
+    r = random 7
+    ind = r * 8 + c
+    if cell[ind] = 0
+      n -= 1
+      cell[ind] = 1
+      for rx = r - 1 to r + 1
+        for cx = c - 1 to c + 1
+          call getind rx cx ind
+          if ind > -1
+            cnt[ind] += 1
+          .
+        .
+      .
+    .
+  .
+  call initvars
+  call outp 464 ""
+  set_textsize 4
+  move_pen 5 3
+  draw_text "Minesweeper - 8 mines"
+  move_pen 5 7.8
+  draw_text "Long-press for flagging"
+  set_textsize 6
+  set_timer 0
+.
+on mouse_down
+  if state = 0
+    if mouse_y < 14 and mouse_x > 60
+      no_time = 1
+      move_pen 64.5 2
+      set_color 464
+      draw_rect 33 11
+    .
+    call getind (mouse_y - 14) div 12 (mouse_x - 2) div 12 indx
+    ticks0 = ticks
+  elif state = 3
+    call start
+  .
+.
+on mouse_up
+  if state = 0 and indx <> -1
+    call test indx
+  .
+  indx = -1
+.
+on timer
+  if state = 1
+    state = 2
+    set_timer 1
+  elif state = 2
+    state = 3
+  elif no_time = 0 and ticks > 3000
+    call outp 844 "B O O M !"
+    call show_mines -2
+    state = 2
+    set_timer 1
+  else
+    if indx > -1 and ticks = ticks0 + 2
+      if cell[indx] < 2
+        set_color 353
+        flag[indx] = 1 - flag[indx]
+        opt = 0
+        if flag[indx] = 1
+          opt = -3
+        .
+        call draw_cell indx opt
+        call upd_info
+      .
+      indx = -1
+    .
+    if no_time = 0 and ticks mod 10 = 0
+      move_pen 64.5 2
+      set_color 464
+      if ticks >= 2500
+        set_color 844
+      .
+      draw_rect 33 11
+      set_color 000
+      move_pen 66 4.5
+      draw_text "Time:" & 300 - ticks / 10
+    .
+    ticks += 1
+    set_timer 0.1
+  .
+.
+call start
+
+`
+s[8] = `# Monster maze
+# 
+size = 12
+n_monster = 6
+monster_delay = 8
+# 
+sz = 2 * size + 1
+c = (100 - 24 / size) / size
+c2 = c / 2
+c5 = c / 5
+c8 = c / 8
+c16 = c / 16
+c10 = c / 10
+c20 = c / 20
+csc2 = (c - c5 - c / 64) / 2
+len f[] sz * sz
+subr go_home
+  me_col = 0
+  me_col_s = 0
+  me_row = 0
+  me_row_s = 0
+  me_x = c2 + c10
+  me_y = c2 + c10
+  m_x = 0
+  m_y = 0
+.
+subr initvars
+  dme_x = 0
+  dme_y = 0
+  len m_col[] n_monster
+  len m_row[] n_monster
+  len m_dirx[] n_monster
+  len m_diry[] n_monster
+  time_start = sys_time
+  stat = 0
+  n_mo = n_monster
+  for i range n_mo
+    h = size div 5
+    m_col[i] = random (size - h) + h
+    m_row[i] = random (size - h) + h
+    m_dirx[i] = 0
+    m_diry[i] = 0
+  .
+  step = 0
+  frame = 0
+  call go_home
+.
+func show_maze . .
+  set_linewidth c5
+  set_color 000
+  move_pen 0 0
+  draw_rect 100 100
+  set_color 040
+  for r range sz
+    for co range sz
+      if f[r * sz + co] = 1
+        if r mod 2 = 0
+          if co mod 2 = 1
+            move_pen c10 + (co - 1) * c2 c10 + r * c2
+            draw_line c10 + (co + 1) * c2 c10 + r * c2
+          .
+        else
+          move_pen c10 + co * c2 c10 + (r - 1) * c2
+          draw_line c10 + co * c2 c10 + (r + 1) * c2
+        .
+      .
+    .
+  .
+.
+func make_maze . .
+  for i range len f[]
+    f[i] = 1
+  .
+  f[(sz - 1) * sz + sz - 2] = 0
+  visited = 1
+  hsz = sz div 2
+  x = 1 + 2 * random hsz
+  y = 1 + 2 * random hsz
+  f[x + y * sz] = 0
+  while visited < hsz * hsz
+    oldx = x
+    oldy = y
+    dir = random 4
+    if dir = 0
+      if x + 2 < sz
+        x += 2
+      .
+    elif dir = 1
+      if y + 2 < sz
+        y += 2
+      .
+    elif dir = 2
+      if x > 2
+        x -= 2
+      .
+    else
+      if y > 2
+        y -= 2
+      .
+    .
+    if f[y * sz + x] = 1
+      f[y * sz + x] = 0
+      f[(y + oldy) div 2 * sz + (x + oldx) div 2] = 0
+      visited += 1
+    .
+  .
+.
+subr new_game
+  call make_maze
+  call show_maze
+  set_background -1
+  call initvars
+.
+func show_monster col row dirx diry . .
+  x = col * c + c2 + c10 + dirx * step * c5
+  y = row * c + c2 + c10 + diry * step * c5
+  set_color 900
+  move_pen x y
+  draw_circle csc2
+  set_color 000
+  move_pen x - c8 y - c10
+  draw_circle c20
+  move_pen x + c8 y - c10
+  draw_circle c20
+  move_pen x y + c5
+  draw_circle c16 * abs step
+.
+subr show_me
+  move_pen me_x me_y
+  draw_circle csc2
+  set_color 000
+  move_pen me_x - c8 me_y - c10
+  draw_circle c20
+  move_pen me_x + c8 me_y - c10
+  draw_circle c20
+  set_linewidth c16
+  move_pen me_x - c10 me_y + c5
+  draw_line me_x + c10 me_y + c5
+.
+on mouse_down
+  m_x = mouse_x
+  m_y = mouse_y
+  if stat < 0
+    call new_game
+  .
+.
+on mouse_move
+  m_x = mouse_x
+  m_y = mouse_y
+.
+func f_dir col row x y . v .
+  v = f[col * 2 + 1 + x + row * sz * 2 + (1 + y) * sz]
+.
+func f_all col row . v .
+  col2 = col * 2
+  rsz2 = row * sz * 2
+  v = f[col2 + 2 + rsz2 + sz]
+  v += f[col2 + rsz2 + sz]
+  v += f[col2 + 1 + rsz2 + 2 * sz]
+  v += f[col2 + 1 + rsz2]
+.
+func do_x . .
+  if me_row_s > -2 and me_row_s < 2
+    if dme_x > c5
+      x = 1
+    elif dme_x < -c5
+      x = -1
+    .
+    if x <> 0
+      if me_col_s = 0
+        call f_dir me_col me_row x 0 v
+      .
+      if v = 0
+        me_col_s += x
+        if me_col_s = 3 * x
+          me_col += x
+          me_col_s = -2 * x
+        .
+        me_row_s = 0
+      .
+    .
+  .
+.
+func do_y . .
+  if me_col_s > -2 and me_col_s < 2
+    if dme_y > c5
+      y = 1
+    elif dme_y < -c5
+      y = -1
+    .
+    if y <> 0
+      if me_row_s = 0
+        call f_dir me_col me_row 0 y v
+      .
+      if v = 0
+        me_row_s += y
+        if me_row_s = 3 * y
+          me_row += y
+          me_row_s = -2 * y
+        .
+        me_col_s = 0
+      .
+    .
+  .
+.
+func move_me . .
+  if abs dme_x > abs dme_y
+    call do_x
+    call do_y
+  else
+    call do_y
+    call do_x
+  .
+  me_x = me_col * c + c2 + c10 + me_col_s * c5
+  me_y = me_row * c + c2 + c10 + me_row_s * c5
+  if me_y > 100 - c2
+    # play_sound [ 440 0.2 494 0.2 523 0.4 ]
+    stat = -1
+    set_color 000
+    move_pen 0 0
+    draw_rect 100 100
+    set_textsize 8
+    set_color 777
+    move_pen 4 8
+    draw_text "Super! You made it."
+    set_textsize 6
+    move_pen 4 22
+    draw_text "Time: " & floor (sys_time - time_start - 0.5)
+    move_pen 4 32
+    draw_text "Monster: " & n_monster
+    move_pen 4 60
+    set_color 822
+    draw_text "More and more monsters"
+    move_pen 4 70
+    draw_text "are coming and they"
+    move_pen 4 80
+    draw_text "are getting faster!"
+    monster_delay -= 1
+    n_monster += 1
+  .
+.
+func get_dir c r . x y .
+  xo = x
+  yo = y
+  repeat
+    d = random 4
+    if d = 0
+      x = -1
+    elif d = 1
+      y = -1
+    elif d = 2
+      x = 1
+    else
+      y = 1
+    .
+    call f_dir c r x y v
+    if v = 1
+      x = 0
+      y = 0
+    elif xo = -x and yo = -y
+      call f_all c r v
+      if v <> 3
+        x = 0
+        y = 0
+      .
+    .
+    until x <> 0 or y <> 0
+  .
+.
+func move_monster . .
+  for i range n_mo
+    call show_monster m_col[i] m_row[i] m_dirx[i] m_diry[i]
+  .
+  frame += 1
+  if frame >= monster_delay
+    frame = 0
+    if step = 0
+      i = 0
+      while i < n_mo
+        if m_row[i] = size
+          n_mo -= 1
+          swap m_row[i] m_row[n_mo]
+          swap m_col[i] m_col[n_mo]
+          swap m_dirx[i] m_dirx[n_mo]
+          swap m_diry[i] m_diry[n_mo]
+        .
+        i += 1
+      .
+      for i range n_mo
+        dx = m_dirx[i]
+        dy = m_diry[i]
+        call get_dir m_col[i] m_row[i] dx dy
+        m_dirx[i] = dx
+        m_diry[i] = dy
+      .
+    .
+    step += 1
+    if step = 3
+      step = -2
+      for i range n_mo
+        m_col[i] += m_dirx[i]
+        m_row[i] += m_diry[i]
+      .
+    .
+  .
+.
+on timer
+  if stat = 1
+    call go_home
+    stat = 0
+  .
+.
+subr do_next
+  clear_screen
+  call move_monster
+  if stat = 0
+    dme_x = m_x - me_x
+    dme_y = m_y - me_y
+    if abs dme_x + abs dme_y < 8 * c
+      call move_me
+    .
+    for i range n_mo
+      if me_col = m_col[i] and me_row = m_row[i]
+        # play_sound [ 330 0.2 294 0.2 262 0.4 ]
+        stat = 1
+        set_timer 1
+      .
+    .
+    set_color 070
+  else
+    set_color 886
+  .
+  call show_me
+  if n_mo = 0
+    stat = -1
+    set_color 797
+    move_pen 0 0
+    draw_rect 100 100
+    set_textsize 10
+    set_color 000
+    move_pen 20 20
+    draw_text "Game over"
+    monster_delay = 8
+    n_monster = 6
+  .
+.
+on animate
+  if stat >= 0
+    call do_next
+  .
+.
+call new_game
+
+`
+s[9] = `# Paint
+#
+col[] = [ 900 090 009 990 620 000 888 ]
+thick[] = [ 1 2 4 ]
+sel_thick = 2
+sel_col = 0
+state = 0
+down = 0
+# 
+func showpen . .
+  set_color 444
+  move_pen 0 0
+  draw_rect 100 8
+  move_pen 2 2
+  set_color 834
+  draw_rect 4 2
+  move_pen 2 4
+  set_color 247
+  draw_rect 4 2
+  for i range len col[]
+    set_color col[i]
+    move_pen i * 8 + 12 4
+    if i = sel_col
+      draw_circle 4
+    else
+      draw_circle 3
+    .
+  .
+  for i range len thick[]
+    set_color 555
+    if i = sel_thick
+      set_color col[sel_col]
+    .
+    move_pen 72 + i * 8 + 4 4
+    draw_circle thick[i] * 0.75
+  .
+  set_color col[sel_col]
+  set_linewidth thick[sel_thick]
+.
+c[] = [ 9 0 0 ]
+func picker . .
+  col = col[sel_col]
+  for i = 2 downto 0
+    c[i] = col mod 10
+    col = col div 10
+  .
+  for i range 10
+    f = 100
+    for j range 3
+      move_pen 10 + i * 8 16 + j * 6.6
+      set_color i * f
+      draw_rect 8 6.6
+      f = f div 10
+    .
+  .
+  set_color 666
+  for i range 3
+    move_pen c[i] * 8 + 14 16 + i * 6.6 + 3.3
+    draw_circle 1
+  .
+.
+func action x y . .
+  if state = 0
+    if y < 8
+      if x < 8
+        state = 1
+        set_background -1
+        call picker
+      elif x < 64
+        sel_col = x div 8 - 1
+      elif x > 72 and x < 96
+        sel_thick = (x - 72) div 8
+      .
+      call showpen
+    else
+      down = 1
+      move_pen x y
+      draw_line x y
+    .
+  else
+    if y < 8 and x > 8 and x < 64
+      sel_col = x div 8 - 1
+      call showpen
+      call picker
+    elif y > 16 and y < 35.8 and x > 10 and x < 90
+      i = floor ((y - 16) / 6.6)
+      c[i] = floor (x - 10) div 8
+      col[sel_col] = c[0] * 100 + c[1] * 10 + c[2]
+      call showpen
+      call picker
+    else
+      state = 0
+      clear_screen
+      call showpen
+    .
+  .
+.
+on mouse_down
+  call action mouse_x mouse_y
+.
+on mouse_up
+  down = 0
+.
+on mouse_move
+  if down = 1 and mouse_y > 8 + thick[sel_thick] / 2
+    draw_line mouse_x mouse_y
+  .
+.
+set_color 888
+draw_rect 100 100
+call showpen
+
+`
+s[10] = `# Piano
+# 
+subr initvars
+  songs[][] &= [ 10 11 12 13 34 34 15 15 15 15 34 39 15 15 15 15 34 39 13 13 13 13 32 32 11 11 11 11 30 39 ]
+  songs[][] &= [ 10 11 12 13 34 34 15 13 17 15 34 39 15 13 17 15 34 39 14 13 13 13 13 12 32 12 11 12 11 10 12 34 10 12 34 14 14 37 14 14 30 ]
+  songs[][] &= [ 20 2 14 17 15 7 5 34 23 4 12 10 31 10 19 14 14 13 13 12 4 2 31 14 14 13 13 12 4 2 31 20 2 14 17 15 7 5 34 23 4 12 10 31 10 19 ]
+  songs[][] &= [ 10 11 12 13 14 15 16 17 ]
+  swap songs[song][] notes[]
+  n$[] = str_chars "CDEFGABC"
+  f[] = [ 262 294 330 349 392 440 494 523 ]
+  ind = 0
+  note = 0
+  stat = 0
+.
+func draw_notes . .
+  move_pen 0 0
+  set_color 987
+  draw_rect 100 55
+  clk = 0
+  y0 = -8
+  for i range len notes[]
+    if clk mod 32 = 0
+      y0 += 12
+      set_color 000
+      set_linewidth 0.1
+      for j range 5
+        move_pen 3 y0 + j * 1.5
+        draw_line 97 y0 + j * 1.5
+      .
+      x = 5
+    .
+    n = notes[i]
+    t = n div 10 + 1
+    n = n mod 10
+    set_color 000
+    if n = 9
+      if t < 3
+        set_linewidth 1
+        move_pen x + 0.5 y0 + 2
+        draw_line x y0 + 2.5
+        set_linewidth 0.4
+        draw_line x + 1 y0 + 3.5
+        draw_line x - 0.5 y0 + 3.5
+      else
+        set_linewidth 1
+        move_pen x - 1 y0 + 2.5
+        draw_line x + 1 y0 + 2.5
+      .
+    else
+      y = y0 + 7.5 - n * 0.75
+      move_pen x y
+      draw_circle 1
+      if t > 3
+        set_color 987
+        draw_circle 0.5
+        set_color 000
+      .
+      set_linewidth 0.1
+      if n <= 5
+        move_pen x + 0.9 y
+        draw_line x + 0.9 y - 4
+        if t = 1
+          set_linewidth 0.3
+          draw_line x + 1.8 y - 1.5
+        .
+      else
+        move_pen x - 0.9 y
+        draw_line x - 0.9 y + 4
+        if t = 1
+          set_linewidth 0.3
+          draw_line x - 1.8 y + 1.5
+        .
+      .
+      if n < 1
+        move_pen x - 2 y
+        draw_line x + 2 y
+      .
+      if t = 3 or t = 5
+        h = y
+        if n mod 2 = 0
+          h -= 0.75
+        .
+        move_pen x + 2.5 h
+        draw_circle 0.35
+      .
+    .
+    clk += t
+    if clk mod 8 = 0
+      set_linewidth 0.1
+      move_pen x + 4 y0
+      draw_line x + 4 y0 + 6
+    .
+    if t = 1
+      x += 4
+    else
+      x += 6.5
+    .
+  .
+.
+func btn x y s$ . .
+  set_linewidth 8
+  move_pen x y
+  draw_line x + 13 y
+  move_pen x - 1 y - 3
+  set_color 000
+  set_textsize 6
+  draw_text s$
+.
+subr draw_btn
+  call btn 82 61 "Play"
+.
+subr draw_btn2
+  call btn 59 61 "Song"
+.
+func draw_key down . .
+  if down = 1
+    set_color 765
+  else
+    set_color 999
+  .
+  x = ind * 12.5 + 1
+  move_pen x 75
+  draw_rect 10.5 25
+  set_color 222
+  if ind <= 1 or ind >= 3 and ind <= 5
+    move_pen x + 8.5 75
+    draw_rect 2 12
+  .
+  if ind >= 1 and ind <= 2 or ind >= 4 and ind <= 6
+    move_pen x 75
+    draw_rect 2 12
+  .
+  set_color 222
+  move_pen x + 2 90
+  draw_text n$[ind]
+.
+subr play_note
+  if clk mod 32 = 0
+    yn += 12
+    xn = 4.5
+  .
+  set_color 900
+  set_linewidth 1
+  move_pen xn yn
+  draw_line xn + 1 yn
+  h = notes[note]
+  t = h div 10 + 1
+  clk += t
+  ind = h mod 10
+  if ind <= 7
+    call draw_key 1
+    play_sound [ f[ind] t * 0.25 - 0.1 ]
+  .
+  stat = 3
+  set_timer t * 0.25 - 0.1
+.
+subr play_note_done
+  set_color 987
+  set_linewidth 1
+  move_pen xn - 0.1 yn
+  draw_line xn + 1.2 yn
+  if t = 1
+    xn += 4
+  else
+    xn += 6.5
+  .
+  if ind <= 7
+    call draw_key 0
+  .
+  note += 1
+  if note < len notes[]
+    stat = 2
+    set_timer 0.1
+  else
+    stat = 0
+  .
+.
+subr start_play
+  clk = 0
+  set_color 432
+  call draw_btn
+  note = 0
+  yn = 1
+  stat = 2
+  set_timer 0
+.
+subr change_song
+  set_color 432
+  call draw_btn2
+  swap songs[song][] notes[]
+  song = (song + 1) mod len songs[][]
+  swap songs[song][] notes[]
+  call draw_notes
+.
+on timer
+  if stat = 2
+    call play_note
+  elif stat = 3
+    call play_note_done
+  .
+.
+on mouse_down
+  if stat >= 2
+    set_timer -1
+    call play_note_done
+    stat = 0
+  .
+  if mouse_y > 75
+    ind = floor (mouse_x / 100 * 8)
+    play_sound [ f[ind] 10 ]
+    call draw_key 1
+    stat = 1
+  elif mouse_y < 65 and mouse_y > 57
+    if mouse_x > 77
+      call start_play
+    elif mouse_x > 55
+      call change_song
+    .
+  .
+.
+on mouse_up
+  set_color 654
+  call draw_btn
+  set_color 654
+  call draw_btn2
+  if stat = 1
+    play_sound [ ]
+    call draw_key 0
+    stat = 0
+  .
+.
+# 
+call initvars
+set_color 321
+move_pen 0 55
+draw_rect 100 45
+set_color 222
+move_pen 5 75
+draw_rect 30 12
+move_pen 40 75
+draw_rect 40 12
+set_textsize 6
+for ind range 8
+  call draw_key 0
+.
+set_color 654
+call draw_btn
+set_color 654
+call draw_btn2
+call draw_notes
+
+`
+s[11] = `# Reaction test
+# 
+txt$ = ""
+func show col s$ . .
+  set_color col
+  move_pen 0 0
+  draw_rect 100 100
+  set_color 000
+  move_pen 20 30
+  draw_text s$
+  txt$ = s$
+.
+subr wait
+  call show 500 "WAIT"
+  set_timer 1.5 + 2 * randomf
+.
+on timer
+  call show 060 "PRESS"
+  time0 = sys_time
+.
+on mouse_down
+  if txt$ = "PRESS"
+    call show 060 sys_time - time0
+  else
+    if txt$ = "WAIT"
+      play_sound [ 440 0.1 ]
+    .
+    call wait
+  .
+.
+set_textsize 20
+call wait
+
+`
+s[12] = `# Tic tac toe
+# 
+len f[] 9
+state = 0
+set_textsize 14
+# 
+func init . .
+  set_linewidth 2
+  clear_screen
+  set_color 666
+  move_pen 34 4
+  draw_line 34 80
+  move_pen 62 4
+  draw_line 62 80
+  move_pen 10 28
+  draw_line 86 28
+  move_pen 10 56
+  draw_line 86 56
+  set_linewidth 2.5
+  for i range 9
+    f[i] = 0
+  .
+  if state = 1
+    set_timer 0.2
+  .
+.
+func draw ind . .
+  c = ind mod 3
+  r = ind div 3
+  x = c * 28 + 20
+  y = r * 28 + 14
+  if f[ind] = 4
+    set_color 900
+    move_pen x - 7 y - 7
+    draw_line x + 7 y + 7
+    move_pen x + 7 y - 7
+    draw_line x - 7 y + 7
+  elif f[ind] = 1
+    set_color 009
+    move_pen x y
+    draw_circle 10
+    set_color -2
+    draw_circle 7.5
+  .
+.
+func sum3 a d . st .
+  for i range 3
+    s += f[a]
+    a += d
+  .
+  if s = 3
+    st = -1
+  elif s = 12
+    st = 1
+  .
+.
+func rate . res done .
+  res = 0
+  for i range 3
+    call sum3 i * 3 1 res
+  .
+  for i range 3
+    call sum3 i 3 res
+  .
+  call sum3 0 4 res
+  call sum3 2 2 res
+  cnt = 1
+  for i range 9
+    if f[i] = 0
+      cnt += 1
+    .
+  .
+  res *= cnt
+  done = 1
+  if res = 0 and cnt > 1
+    done = 0
+  .
+.
+func minmax player alpha beta . rval rmov .
+  call rate rval done
+  if done = 1
+    if player = 1
+      rval = -rval
+    .
+  else
+    rval = alpha
+    start = random 9
+    mov = start
+    repeat
+      if f[mov] = 0
+        f[mov] = player
+        call minmax (5 - player) (-beta) (-rval) val h
+        val = -val
+        f[mov] = 0
+        if val > rval
+          rval = val
+          rmov = mov
+        .
+      .
+      mov = (mov + 1) mod 9
+      until mov = start or rval >= beta
+    .
+  .
+.
+func show_result val . .
+  set_color 555
+  move_pen 16 84
+  if val < 0
+    # this never happens
+    draw_text "You won"
+  elif val > 0
+    draw_text "You lost"
+  else
+    draw_text "Tie"
+  .
+  state += 2
+.
+func computer . .
+  call minmax 4 -11 11 val mov
+  f[mov] = 4
+  call draw mov
+  call rate val done
+  state = 0
+  if done = 1
+    call show_result val
+  .
+.
+func human . .
+  mov = floor ((mouse_x - 6) / 28) + 3 * floor (mouse_y / 28)
+  if f[mov] = 0
+    f[mov] = 1
+    call draw mov
+    state = 1
+    set_timer 0.5
+  .
+.
+on timer
+  call rate val done
+  if done = 1
+    call show_result val
+  else
+    call computer
+  .
+.
+on mouse_down
+  if state = 0
+    if mouse_x > 6 and mouse_x < 90 and mouse_y < 84
+      call human
+    .
+  elif state >= 2
+    state -= 2
+    call init
+  .
+.
+call init
+
+`
+</script>
+<p><a href=javascript:inst(0)>1x1 trainer</a>
+<p><a href=javascript:inst(1)>Catch the ball</a>
+<p><a href=javascript:inst(2)>Hangman</a>
+<p><a href=javascript:inst(3)>Learning clock</a>
+<p><a href=javascript:inst(4)>Letter memory</a>
+<p><a href=javascript:inst(5)>Mastermind</a>
+<p><a href=javascript:inst(6)>Math trainer</a>
+<p><a href=javascript:inst(7)>Mine sweeper</a>
+<p><a href=javascript:inst(8)>Monster maze</a>
+<p><a href=javascript:inst(9)>Paint</a>
+<p><a href=javascript:inst(10)>Piano</a>
+<p><a href=javascript:inst(11)>Reaction test</a>
+<p><a href=javascript:inst(12)>Tictactoe</a>
+<p>
+<h3>Make your own app</h3>
+<a href="../ide/">Programming environment</a>
+<p>
+<hr>
+<small>christof.kaser@gmail.com</small>
