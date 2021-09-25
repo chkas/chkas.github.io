@@ -41,7 +41,7 @@ install.onclick = function() {
 }
 
 easyscript = `# Fractal tree
-#
+# 
 func tree x y deg n . .
   if n > 0
     set_linewidth n * 0.4
@@ -53,10 +53,11 @@ func tree x y deg n . .
     call tree x y deg + 20 n - 1
   .
 .
-call tree 50 90 -90 10
-on mouse_down
+set_timer 0
+on timer
   clear_screen
   call tree 50 90 -90 10
+  set_timer 1
 .
 
 `
