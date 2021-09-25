@@ -1,0 +1,88 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>plot_coord</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>plot_coord</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `x[] = [ 0 1 2 3 4 5 6 7 8 9 ]
+y[] = [ 2.7 2.8 31.4 38.1 58.0 76.2 100.5 130.0 149.3 180.0 ]
+# 
+clear_screen
+set_linewidth 0.5
+move_pen 10 3
+draw_line 10 95
+draw_line 95 95
+set_textsize 3
+n = len x[]
+m = 0
+for i range n
+  if y[i] > m
+    m = y[i]
+  .
+.
+set_linewidth 0.1
+sty = m div 9
+for i range 10
+  move_pen 2 94 - i * 10
+  draw_text i * sty
+  move_pen 10 95 - i * 10
+  draw_line 95 95 - i * 10
+.
+stx = x[n - 1] div 9
+for i range 10
+  move_pen i * 9 + 10 96.5
+  draw_text i * stx
+  move_pen i * 9 + 10 95
+  draw_line i * 9 + 10 3
+.
+set_color 900
+set_linewidth 0.5
+for i range n
+  x = x[i] * 9 / stx + 10
+  y = 100 - (y[i] / sty * 10 + 5)
+  if i = 0
+    move_pen x y
+  else
+    draw_line x y
+  .
+.
+
+`
+</script>
+<script src=easy.js></script>

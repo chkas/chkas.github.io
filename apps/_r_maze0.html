@@ -1,0 +1,109 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>r_maze0</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>r_maze0</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# maze generation
+# 
+size = 20
+n = 2 * size + 1
+endpos = n * n - n - 3
+startpos = 2 * n + 2
+f = 100 / n
+# 
+func draw_square pos col . .
+  x = pos mod n
+  y = pos div n
+  set_color col
+  move_pen x * f y * f
+  draw_rect f * 1.05 f * 1.05
+.
+len m[] n * n
+# 
+func show_maze . .
+  set_color 000
+  draw_rect 100 100
+  for i range len m[]
+    if m[i] = 0
+      call draw_square i 777
+    .
+  .
+  call draw_square startpos 900
+.
+offs[] = [ 1 n -1 (-n) ]
+func visited pos . r .
+  r = 0
+  for i range 4
+    r += m[pos + 2 * offs[i]]
+  .
+.
+func m_maze pos . .
+  m[pos] = 0
+  repeat
+    call visited pos res
+    until res = 0
+    dir = random 4
+    posn = pos + 2 * offs[dir]
+    if m[posn] <> 0
+      m[pos + offs[dir]] = 0
+      call m_maze posn
+    .
+  .
+.
+func make_maze . .
+  for i range len m[]
+    m[i] = 1
+  .
+  for i range n
+    m[i] = 0
+    m[n * i] = 0
+    m[n * i + n - 1] = 0
+    m[n * (n - 1) + i] = 0
+  .
+  call m_maze startpos
+  m[endpos] = 0
+.
+# 
+call make_maze
+call show_maze
+
+`
+</script>
+<script src=easy.js></script>

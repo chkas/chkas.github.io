@@ -1,0 +1,109 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Game of life</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Game of life</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Game of life
+# 
+n = 70
+n += 2
+subr init
+  for r = 1 to n - 2
+    for c = 1 to n - 2
+      i = r * n + c
+      if randomf < 0.3
+        f[i] = 1
+      .
+    .
+  .
+.
+f = 100 / (n - 2)
+subr show
+  clear_screen
+  for r = 1 to n - 2
+    for c = 1 to n - 2
+      if f[r * n + c] = 1
+        move_pen (c - 1) * f (r - 1) * f
+        draw_rect f * 0.9 f * 0.9
+      .
+    .
+  .
+.
+subr update
+  swap f[] p[]
+  for r = 1 to n - 2
+    sm = 0
+    i = r * n
+    sr = p[i - n + 1] + p[i + 1] + p[i + n + 1]
+    for c = 1 to n - 2
+      i += 1
+      sl = sm
+      sm = sr
+      sr = p[i - n + 1] + p[i + 1] + p[i + n + 1]
+      s = sl + sm + sr
+      if s = 3 or s = 4 and p[i] = 1
+        f[i] = 1
+      else
+        f[i] = 0
+      .
+    .
+  .
+.
+on timer
+  call update
+  call show
+  set_timer 0.2
+.
+on mouse_down
+  c = mouse_x div f
+  r = mouse_y div f
+  i = r * n + c + n + 1
+  f[i] = 1 - f[i]
+  call show
+  set_timer 3
+.
+len f[] n * n
+len p[] n * n
+call init
+set_timer 0
+
+`
+</script>
+<script src=easy.js></script>

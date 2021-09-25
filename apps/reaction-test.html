@@ -1,0 +1,78 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Reaction test</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Reaction test</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Reaction test
+# 
+txt$ = ""
+func show col s$ . .
+  set_color col
+  move_pen 0 0
+  draw_rect 100 100
+  set_color 000
+  move_pen 20 30
+  draw_text s$
+  txt$ = s$
+.
+subr wait
+  call show 500 "WAIT"
+  set_timer 1.5 + 2 * randomf
+.
+on timer
+  call show 060 "PRESS"
+  time0 = sys_time
+.
+on mouse_down
+  if txt$ = "PRESS"
+    call show 060 sys_time - time0
+  else
+    if txt$ = "WAIT"
+      play_sound [ 440 0.1 ]
+    .
+    call wait
+  .
+.
+set_textsize 20
+call wait
+
+`
+</script>
+<script src=easy.js></script>

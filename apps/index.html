@@ -1,0 +1,558 @@
+<!doctype html><title>easylang.online examples</title>
+<meta name="description" content="web apps for easylang.online - an easy programming language">
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="icon" href="../icon.png" type="image/x-png">
+
+<style>
+body{
+  background-color:#eee;
+  font:normal normal normal 16px/1.4 Arial,sans-serif;
+  margin-left:16px;margin-right:16px;
+  max-width:730px;
+}
+
+pre{
+	white-space:pre-wrap;
+	background-color:#ffe;
+	border:1px solid gray;
+	border-radius:5px;
+	padding:5px;
+	font:normal normal normal 11.5px/1.3 monospace;
+}
+textarea {
+	background-color:#ffe;
+	margin-bottom:10px;
+	border:1px solid gray;
+	border-radius:5px;
+	padding:5px;
+	font:normal normal normal 11.5px/1.3 monospace;
+}
+
+h2 {background-color:#bdb;padding:7px;padding-left:12px}
+h3 {background-color:#bdb;padding:5px;padding-left:12px;margin-top:20px}
+
+a:hover {background-color:#bdb}
+a {color: #000}
+a:visited {color: #000}
+
+button {
+	background-color: #dfd;
+	cursor: pointer;
+	padding: 4px 4px;
+	margin: 4px 8px;
+	font-size: 100%;
+	border:1px solid gray;
+	border-radius:8px;
+}
+button:enabled:hover {background-color:#cec}
+button:enabled:active {background-color:#484}
+
+.flex {
+	display:inline-flex;
+	flex-wrap:wrap
+}
+
+#pre1 {
+	width:330px;
+}
+#canv {
+	width:330px;
+	height:330px;
+	margin-left:10px
+}
+
+
+#canv2 {
+	width:330px;
+	height:330px
+}
+
+.url {
+	font-size: 60%;
+	padding:10px
+}
+.col { columns:auto 8em }
+</style>
+
+
+<h2>easylang.online</h2>
+
+<canvas id=canv1 style="float:right;width:150px;height:150px"></canvas>
+
+This simple programming language with built-in graphical functions and an easy to use and offline usable browser IDE is well suited as a teaching and learning language. You can also use it to write graphical applications that you can embed in a web page.
+
+<p><b><a href="../ide/">Browser based development environment</a></b>
+
+<p><small>
+A language that doesn’t have everything is actually easier to program in than some that do. -- Dennis M. Ritchie
+</small>
+
+<h3>Interactive tutorials and blogs</h3>
+
+<p><a href="tutorial_learn_programming.html">Learn Programming Basics</a>
+<p><a href="tutorial_programming_a_letter_memory_game.html">Programming a Letter Memory Game</a>
+<p><a href="tutorial_documentation_and_code_snippets.html">Documentation and Code Snippets</a>
+<p><a href="tutorial_functions_and_recursion.html">Functions and Recursion</a>
+<p><a href="tutorial_sorting_algorithms.html">Sorting Algorithms</a>
+<p><a href="tutorial_monte_carlo_methods.html">Monte Carlo Methods or Why it's a Bad Idea to Go to the Casino</a>
+<p><a href="tut_blackj.html">Blackjack - Probabilties, Card Counting</a>
+<br><br>
+
+<h3>Web demos</h3>
+
+Some of these examples are solved tasks of 
+<a href=https://rosettacode.org/wiki/Category:EasyLang>Rosetta Code</a>
+<p>
+<div class=col>
+<a href=15-puzzle.html>15 puzzle</a><p>
+<a href=1x1-trainer.html>1x1 trainer</a><p>
+<a href=barnsley-fern.html>Barnsley fern</a><p>
+<a href=bouncing-balls.html>Bouncing balls</a><p>
+<a href=catch-the-ball.html>Catch the ball</a><p>
+<a href=clock.html>Clock</a><p>
+<a href=forest-fire.html>Forest fire</a><p>
+<a href=fractal-tree.html>Fractal tree</a><p>
+<a href=game-of-life.html>Game of life</a><p>
+<a href=hangman.html>Hangman</a><p>
+<a href=julia-set.html>Julia set</a><p>
+<a href=learning-clock.html>Learning clock</a><p>
+<a href=letter-memory.html>Letter memory</a><p>
+<a href=mandelbrot.html>Mandelbrot</a><p>
+<a href=mastermind.html>Mastermind</a><p>
+<a href=math-trainer.html>Math trainer</a><p>
+<a href=mine-sweeper.html>Mine sweeper</a><p>
+<a href=monster-maze.html>Monster maze</a><p>
+<a href=paint.html>Paint</a><p>
+<a href=particles.html>Particles</a><p>
+<a href=pendulum.html>Pendulum</a><p>
+<a href=piano.html>Piano</a><p>
+<a href=reaction-test.html>Reaction test</a><p>
+<a href=tictactoe.html>Tictactoe</a><p>
+</div>
+<p>
+<hr>
+<p><a href="../sky/">Starry sky</a>
+
+<br><br>
+
+<h3>Embedding in a web page</h3>
+
+<p id=err style="font-weight:bold;color:#d00"></p>
+
+When copying the files <a href=easyw.wasm><i>easyw.wasm</i></a>, <a href=easyw.js><i>easyw.js</i></a>
+and <a href=easy.js><i>easy.js</i></a> to your web directory, you can embed a script in a web page.
+
+<p>
+<div class=flex>
+<pre id=pre1></pre>
+
+<canvas id=canv></canvas>
+</div>
+
+<script>
+s1 = `func tree x y deg n . .
+  if n > 0
+    set_linewidth n * 0.4
+    move_pen x y
+    x += cos deg * n * 1.4 * (randomf + 0.5)
+    y += sin deg * n * 1.4 * (randomf + 0.5)
+    draw_line x y
+    call tree x y deg - 20 n - 1
+    call tree x y deg + 20 n - 1
+  .
+.
+call tree 50 90 -90 10
+`
+
+h = `<canvas style="width:95vh;height:95vh">
+</canvas><script>
+easyscript = `
+h += "`\n\n" + s1 + '\n`\n<\/script><script src=easy.js><\/script>'
+
+pre1.innerText = h
+
+if (typeof WebAssembly != 'object') {
+	err.innerHTML = "You need a browser with wasm support enabled"
+}
+
+function showx(s) {
+	canv2.width = 300
+	canv2.height = 150
+	easyrun(s, canv2)
+}
+
+function show(s) {
+	code1.value = s.substring(1)
+	showx(s)
+}
+
+s2 = `
+# Clock
+# 
+func draw hour min sec . .
+  # dial
+  set_color 333
+  move_pen 50 50
+  draw_circle 45
+  set_color 797
+  draw_circle 44
+  set_color 333
+  for i range 60
+    a = i * 6
+    move_pen 50 + sin a * 40 50 - cos a * 40
+    draw_circle 0.25
+  .
+  for i range 12
+    a = i * 30
+    move_pen 50 + sin a * 40 50 - cos a * 40
+    draw_circle 1
+  .
+  # hour
+  set_linewidth 2
+  set_color 000
+  a = (hour * 60 + min) / 2
+  move_pen 50 50
+  draw_line 50 + sin a * 32 50 - cos a * 32
+  # min
+  set_linewidth 1.5
+  a = (sec + min * 60) / 10
+  move_pen 50 50
+  draw_line 50 + sin a * 40 50 - cos a * 40
+  # sec  
+  set_linewidth 1
+  set_color 700
+  a = sec * 6
+  move_pen 50 50
+  draw_line 50 + sin a * 40 50 - cos a * 40
+.
+on timer
+  if t <> floor sys_time
+    t = floor sys_time
+    h$ = time_str t
+    sec = number substr h$ 17 2
+    min = number substr h$ 14 2
+    hour = number substr h$ 11 2
+    if hour > 12
+      hour -= 12
+    .
+    call draw hour min sec
+  .
+  set_timer 0.1
+.
+set_timer 0
+
+`
+function runClock() {
+  show(s2)
+}
+
+function runBall() {
+  show(`
+# Ball
+#
+on animate
+  clear_screen
+  set_color 555
+  move_pen 0 15
+  draw_line 0 100
+  draw_line 100 100
+  draw_line 100 15
+  move_pen 10 50
+  draw_text "programming fun"
+  set_color 700
+  move_pen x y
+  draw_circle rad
+  if x > 100 - rad or x < rad
+    vx = -vx
+  .
+  x += vx
+  if y > 100 - rad
+    vy = -vy
+  else
+    vy += 0.1
+  .
+  y += vy
+.
+rad = 12
+x = 50
+y = 15
+vx = 1.5`)
+}
+
+function runMandel() {
+	show(`
+# Mandelbrot
+# 
+for y0 range 300
+  cy = (y0 - 150) / 120
+  for x0 range 300
+    cx = (x0 - 220) / 120
+    x = 0
+    y = 0
+    set_rgb 0 0 0
+    for n range 128
+      if x * x + y * y > 4
+        set_rgb n / 16 0 0
+        break 1
+      .
+      h = x * x - y * y + cx
+      y = 2 * x * y + cy
+      x = h
+    .
+    move_pen x0 / 3 y0 / 3
+    draw_rect 0.4 0.4
+  .
+.
+
+`)
+}
+
+function runPendel() {
+	show(`
+# Pendulum
+#
+on animate
+  clear_screen
+  move_pen 50 50
+  draw_circle 1
+  x = 50 + 40 * sin ang
+  y = 50 - 40 * cos ang
+  draw_line x y
+  draw_circle 5
+  vel += sin ang / 5
+  ang += vel
+.
+ang = 10
+
+`)
+}
+
+function runTic() {
+	show(`
+# Tic tac toe
+# 
+len f[] 9
+state = 0
+set_textsize 14
+# 
+func init . .
+  set_linewidth 2
+  clear_screen
+  set_color 666
+  move_pen 34 4
+  draw_line 34 80
+  move_pen 62 4
+  draw_line 62 80
+  move_pen 10 28
+  draw_line 86 28
+  move_pen 10 56
+  draw_line 86 56
+  set_linewidth 2.5
+  for i range 9
+    f[i] = 0
+  .
+  if state = 1
+    set_timer 0.2
+  .
+.
+func draw ind . .
+  c = ind mod 3
+  r = ind div 3
+  x = c * 28 + 20
+  y = r * 28 + 14
+  if f[ind] = 4
+    set_color 900
+    move_pen x - 7 y - 7
+    draw_line x + 7 y + 7
+    move_pen x + 7 y - 7
+    draw_line x - 7 y + 7
+  elif f[ind] = 1
+    set_color 009
+    move_pen x y
+    draw_circle 10
+    set_color -2
+    draw_circle 7.5
+  .
+.
+func sum3 a d . st .
+  for i range 3
+    s += f[a]
+    a += d
+  .
+  if s = 3
+    st = -1
+  elif s = 12
+    st = 1
+  .
+.
+func rate . res done .
+  res = 0
+  for i range 3
+    call sum3 i * 3 1 res
+  .
+  for i range 3
+    call sum3 i 3 res
+  .
+  call sum3 0 4 res
+  call sum3 2 2 res
+  cnt = 1
+  for i range 9
+    if f[i] = 0
+      cnt += 1
+    .
+  .
+  res *= cnt
+  done = 1
+  if res = 0 and cnt > 1
+    done = 0
+  .
+.
+func minmax player alpha beta . rval rmov .
+  call rate rval done
+  if done = 1
+    if player = 1
+      rval = -rval
+    .
+  else
+    rval = alpha
+    start = random 9
+    mov = start
+    repeat
+      if f[mov] = 0
+        f[mov] = player
+        call minmax (5 - player) (-beta) (-rval) val h
+        val = -val
+        f[mov] = 0
+        if val > rval
+          rval = val
+          rmov = mov
+        .
+      .
+      mov = (mov + 1) mod 9
+      until mov = start or rval >= beta
+    .
+  .
+.
+func show_result val . .
+  set_color 555
+  move_pen 16 84
+  if val < 0
+    # this never happens
+    draw_text "You won"
+  elif val > 0
+    draw_text "You lost"
+  else
+    draw_text "Tie"
+  .
+  state += 2
+.
+func computer . .
+  call minmax 4 -11 11 val mov
+  f[mov] = 4
+  call draw mov
+  call rate val done
+  state = 0
+  if done = 1
+    call show_result val
+  .
+.
+func human . .
+  mov = floor ((mouse_x - 6) / 28) + 3 * floor (mouse_y / 28)
+  if f[mov] = 0
+    f[mov] = 1
+    call draw mov
+    state = 1
+    set_timer 0.5
+  .
+.
+on timer
+  call rate val done
+  if done = 1
+    call show_result val
+  else
+    call computer
+  .
+.
+on mouse_down
+  if state = 0
+    if mouse_x > 6 and mouse_x < 90 and mouse_y < 84
+      call human
+    .
+  elif state >= 2
+    state -= 2
+    call init
+  .
+.
+call init
+
+`)
+}
+
+</script>
+
+<h3>Embedding examples</h3>
+
+<div class=flex>
+<div style="width:330px;float:left;margin-right:10px">
+	<a href=javascript:runClock()>Clock</a>
+	<p><a href=javascript:runPendel()>Pendulum</a>
+	<p><a href=javascript:runBall()>Jumping ball</a>
+	<p><a href=javascript:runTic()>Tic-tac-toe</a>
+	<p><a href=javascript:runMandel()>Mandelbrot</a>
+	<hr style="width:100px;margin-left:4px">
+	<p>
+	<textarea id=code1 cols=36 rows=6 autocomplete=off 
+		autocorrect=off autocapitalize=off spellcheck=false></textarea>
+	<br>
+	<button onclick="showx(code1.value)">Show</button>
+</div>
+
+<canvas id=canv2></canvas>
+</div>
+
+<script src=easy.js></script>
+<script>
+easyrun(s1, canv)
+easyrun(s1, canv1)
+show(s2)
+
+function createURL() {
+	var h = encodeURIComponent(code1.value)
+	url.href = location.origin + "/run/?code=" + h
+	url.target = '_blank'
+	url.innerHTML = "Run and install it on code runner"
+}
+</script>
+
+<hr>
+<p>
+A URL can be created, that can start a <i>code runner</i> with the program encoded in a URL parameter.
+<p>
+Inside the <i>code runner</i> our program can be stored and run offline. The code runner is a <i>PWA</i> 
+(Progressive Web App). Therefore it works like a native app on the mobile device.
+
+<p>
+
+<button onclick=createURL()>Create a start URL</button>
+<p>
+<a id=url></a>
+
+
+<h3>More</h3>
+
+<a href=https://rosettacode.org/wiki/Category:EasyLang>easylang.online on <i>Rosetta Code</i></a>
+<p>
+<a href=../show/><i>Advent Of Code</i> with easylang.online</a>
+
+<h3>Free</h3>
+
+<i>easylang.online</i> is free of charge: free to use, free to copy and requires no registration or login.
+<p>
+If you like it, recommend it to others.
+<p>
+
+<hr>
+<small><small>christof.kaser@gmail.com 
+- <a href=https://easylang.online/>easylang.online</a>
+</small></small>

@@ -1,0 +1,207 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Mastermind</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Mastermind</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Mastermind:w90
+# 
+col[] = [ 802 990 171 229 950 808 ]
+len code[] 4
+len guess[] 4
+# 
+subr init_vars
+  row = 7
+.
+func draw_rate r black white . .
+  for j range 2
+    for c range 2
+      move_pen c * 3.5 + 71.5 r * 11.5 + 10.4 + j * 3.5
+      if black > 0
+        set_color 000
+        draw_circle 1.4
+        black -= 1
+      elif white > 0
+        set_color 999
+        draw_circle 1.4
+        white -= 1
+      else
+        set_color 310
+        draw_circle 0.7
+      .
+    .
+  .
+.
+func show_code . .
+  set_color 531
+  move_pen 22 0
+  draw_rect 46 8
+  for i range 4
+    move_pen i * 8 + 28 3
+    set_color col[code[i]]
+    draw_circle 2
+  .
+.
+func draw_guess . .
+  for c range 4
+    move_pen c * 12 + 20 row * 11.5 + 12
+    set_color col[guess[c]]
+    draw_circle 3.8
+  .
+.
+func next_row . .
+  set_color 420
+  set_linewidth 11
+  move_pen 17 row * 11.5 + 12
+  draw_line 60 row * 11.5 + 12
+  call draw_guess
+  move_pen 73.5 row * 11.5 + 12
+  set_color 310
+  draw_circle 5.0
+  set_color 753
+  move_pen 71.5 row * 11.5 + 8.5
+  set_textsize 7
+  draw_text "✓"
+.
+func rate . .
+  move_pen 73.5 row * 11.5 + 12
+  set_color 531
+  draw_circle 5.2
+  c[] = code[]
+  g[] = guess[]
+  for i range 4
+    if c[i] = g[i]
+      black += 1
+      c[i] = -1
+      g[i] = -2
+    .
+  .
+  for i range 4
+    for j range 4
+      if c[i] = g[j]
+        white += 1
+        c[i] = -1
+        g[j] = -2
+      .
+    .
+  .
+  call draw_rate row black white
+  set_color 531
+  set_linewidth 12
+  move_pen 17 row * 11.5 + 12
+  draw_line 60 row * 11.5 + 12
+  call draw_guess
+  row -= 1
+  if black = 4
+    row = -1
+  .
+  if row = -1
+    call show_code
+    set_timer 2
+  else
+    call next_row
+  .
+.
+on timer
+  row = -2
+.
+func new . .
+  call init_vars
+  for i range 4
+    code[i] = random 6
+  .
+  set_color 531
+  move_pen 10 10
+  draw_rect 70 80
+  set_linewidth 10
+  move_pen 5 5
+  draw_line 5 95
+  draw_line 85 95
+  draw_line 85 5
+  draw_line 5 5
+  set_color 310
+  set_linewidth 7
+  move_pen 28 3.5
+  draw_line 58 3.5
+  move_pen 30 1.5
+  set_color 864
+  set_textsize 4
+  draw_text "Mastermind"
+  set_color 310
+  set_linewidth 0.5
+  move_pen 10 10
+  draw_line 10 96
+  move_pen 67 10
+  draw_line 67 96
+  move_pen 80 10
+  draw_line 80 96
+  for r range 8
+    for c range 4
+      move_pen c * 12 + 20 r * 11.5 + 12
+      draw_circle 2
+    .
+    call draw_rate r 0 0
+  .
+  guess[0] = 0
+  guess[1] = 0
+  guess[2] = 1
+  guess[3] = 1
+  call next_row
+.
+func do_move . .
+  c = (mouse_x - 15) div 12
+  guess[c] = (guess[c] + 1) mod 6
+  call draw_guess
+.
+on mouse_down
+  if row = -2
+    call new
+  elif mouse_y > row * 11.5 + 7 and mouse_y < row * 11.5 + 17 and row >= 0
+    if mouse_x > 15 and mouse_x < 61
+      call do_move
+    elif mouse_x > 67 and mouse_x < 80
+      call rate
+    .
+  .
+.
+call new
+
+`
+</script>
+<script src=easy.js></script>

@@ -1,0 +1,99 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Clock</title>
+
+<style>
+
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Clock</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Clock
+# 
+func draw hour min sec . .
+  # dial
+  set_color 333
+  move_pen 50 50
+  draw_circle 45
+  set_color 797
+  draw_circle 44
+  set_color 333
+  for i range 60
+    a = i * 6
+    move_pen 50 + sin a * 40 50 - cos a * 40
+    draw_circle 0.25
+  .
+  for i range 12
+    a = i * 30
+    move_pen 50 + sin a * 40 50 - cos a * 40
+    draw_circle 1
+  .
+  # hour
+  set_linewidth 2
+  set_color 000
+  a = (hour * 60 + min) / 2
+  move_pen 50 50
+  draw_line 50 + sin a * 32 50 - cos a * 32
+  # min
+  set_linewidth 1.5
+  a = (sec + min * 60) / 10
+  move_pen 50 50
+  draw_line 50 + sin a * 40 50 - cos a * 40
+  # sec  
+  set_linewidth 1
+  set_color 700
+  a = sec * 6
+  move_pen 50 50
+  draw_line 50 + sin a * 40 50 - cos a * 40
+.
+on timer
+  if t <> floor sys_time
+    t = floor sys_time
+    h$ = time_str t
+    sec = number substr h$ 17 2
+    min = number substr h$ 14 2
+    hour = number substr h$ 11 2
+    if hour > 12
+      hour -= 12
+    .
+    call draw hour min sec
+  .
+  set_timer 0.1
+.
+set_timer 0
+
+`
+</script>
+<script src=easy.js></script>

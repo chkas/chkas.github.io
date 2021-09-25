@@ -1,0 +1,65 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>dragon curve</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>dragon curve</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `set_color 050
+set_linewidth 0.5
+x = 25
+y = 60
+move_pen x y
+angle = 0
+# 
+func dragon size lev d . .
+  if lev = 0
+    x -= cos angle * size
+    y += sin angle * size
+    draw_line x y
+  else
+    call dragon size / sqrt 2 lev - 1 1
+    angle -= d * 90
+    call dragon size / sqrt 2 lev - 1 -1
+  .
+.
+call dragon 60 12 1
+
+`
+</script>
+<script src=easy.js></script>

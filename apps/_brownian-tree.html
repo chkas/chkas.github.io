@@ -1,0 +1,81 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>brownian tree</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>brownian tree</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Brownian tree
+#
+set_rgb 0 1 1
+len f[] 200 * 200
+move_pen 50 50
+draw_rect 0.5 0.5
+f[100 * 200 + 100] = 1
+n = 9000
+while i < n
+  repeat
+    x = random 200
+    y = random 200
+    until f[y * 200 + x] <> 1
+  .
+  while 1 = 1
+    xo = x
+    yo = y
+    x += random 3 - 1
+    y += random 3 - 1
+    if x < 0 or y < 0 or x >= 200 or y >= 200
+      break 1
+    .
+    if f[y * 200 + x] = 1
+      move_pen xo / 2 yo / 2
+      draw_rect 0.5 0.5
+      f[yo * 200 + xo] = 1
+      i += 1
+      if i mod 16 = 0
+        set_rgb 0.2 + i / n 1 1
+        sleep 0
+      .
+      break 1
+    .
+  .
+.
+
+`
+</script>
+<script src=easy.js></script>

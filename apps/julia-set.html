@@ -1,0 +1,68 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Julia set</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Julia set</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Julia set
+# 
+cx = -0.7
+cy = 0.27015
+for y range 300
+  for x range 300
+    zx = (x - 150) / 100
+    zy = (y - 150) / 150
+    set_rgb 0 0 0
+    for iter range 128
+      if zx * zx + zy * zy > 4
+        set_rgb iter / 16 0 0
+        break 1
+      .
+      h = zx * zx - zy * zy + cx
+      zy = 2 * zx * zy + cy
+      zx = h
+    .
+    move_pen x / 3 y / 3
+    draw_rect 0.4 0.4
+  .
+.
+
+`
+</script>
+<script src=easy.js></script>

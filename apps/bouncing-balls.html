@@ -1,0 +1,123 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Bouncing balls</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Bouncing balls</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# bouncing balls
+# 
+rad = 8
+n = 5
+speed = 2
+# 
+h = floor sqrt n + 1
+d = 100 / (h + 1)
+for i range n
+  x[] &= i mod h * d + d
+  y[] &= i div h * d + d
+  c = 0
+  for j range 3
+    c = c * 10 + random 8 + 2
+  .
+  col[] &= c
+  vx[] &= randomf * speed * 2 - speed
+  vy[] &= randomf * speed * 2 - speed
+.
+rad2 = rad * 2
+radrad4 = rad2 * rad2
+# 
+subr collide
+  d = sqrt (dx * dx + dy * dy)
+  dx /= d
+  dy /= d
+  v = (vx[i] - vx[j]) * dx + (vy[i] - vy[j]) * dy
+  if v < 0
+    a = vx[i] * dx + vy[i] * dy
+    b = vx[j] * dx + vy[j] * dy
+    vx[i] += (b - a) * dx
+    vy[i] += (b - a) * dy
+    vx[j] += (a - b) * dx
+    vy[j] += (a - b) * dy
+  .
+.
+on animate
+  clear_screen
+  set_color 222
+  move_pen 0 0
+  draw_line 100 0
+  draw_line 100 100
+  draw_line 0 100
+  draw_line 0 0
+  for i range n
+    set_color col[i]
+    move_pen x[i] y[i]
+    draw_circle rad
+    x[i] += vx[i]
+    y[i] += vy[i]
+  .
+  for i range n
+    x = x[i]
+    y = y[i]
+    for j = i + 1 to n - 1
+      dx = x - x[j]
+      if dx < rad2
+        dy = y - y[j]
+        if dy < rad2
+          if dx * dx + dy * dy < radrad4
+            call collide
+          .
+        .
+      .
+    .
+    if x > 100 - rad and vx[i] > 0
+      vx[i] = -vx[i]
+    elif x < rad and vx[i] < 0
+      vx[i] = -vx[i]
+    .
+    if y > 100 - rad and vy[i] > 0
+      vy[i] = -vy[i]
+    elif y < rad and vy[i] < 0
+      vy[i] = -vy[i]
+    .
+  .
+.
+
+`
+</script>
+<script src=easy.js></script>

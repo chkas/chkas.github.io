@@ -1,0 +1,134 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Catch the ball</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Catch the ball</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Catch the ball
+# 
+subr new_ball
+  x_pos = 50
+  y_pos = 50
+  x_speed = 0.4 + 0.2 * points + (randomf - 0.5)
+  y_speed = 0.4 + 0.2 * points + (randomf - 0.5)
+  color = 0
+  for j range 3
+    color = color * 10 + random 8 + 2
+  .
+.
+subr start
+  rad = 16
+  mouse_cursor 1
+  points = 0
+  lives = 3
+  set_textsize 6
+  call new_ball
+.
+set_background 000
+subr backgr
+  clear_screen
+  set_color 222
+  move_pen 0 0
+  draw_line 100 0
+  draw_line 100 100
+  draw_line 0 100
+  draw_line 0 0
+  set_color 995
+  move_pen 4 4
+  draw_text "Points: " & points
+  move_pen 4 12
+  draw_text "Lives: " & lives
+.
+on animate
+  if lives > 0
+    call backgr
+    set_color color
+    move_pen x_pos y_pos
+    draw_circle rad
+    x_pos += x_speed
+    y_pos += y_speed
+    if x_pos < rad or x_pos > 100 - rad
+      x_speed = -x_speed
+    .
+    if y_pos < rad or y_pos > 100 - rad
+      y_speed = -y_speed
+    .
+  .
+.
+subr catch
+  dx = abs (mouse_x - x_pos)
+  dy = abs (mouse_y - y_pos)
+  if dx * dx + dy * dy < rad * rad
+    # play_sound [ 440 0.1 494 0.1 523 0.2 ]
+    points += 1
+    if points mod 3 = 0
+      lives += 1
+    .
+    call new_ball
+  else
+    lives -= 1
+    # play_sound [ 262 0.2 ]
+    if lives = 0
+      call backgr
+      set_textsize 10
+      move_pen 20 40
+      draw_text "Game over"
+      mouse_cursor 0
+    .
+  .
+.
+on timer
+  locked = 0
+.
+on mouse_down
+  if locked = 0
+    locked = 1
+    set_timer 1
+    if lives = 0
+      call start
+    else
+      call catch
+    .
+  .
+.
+call start
+
+`
+</script>
+<script src=easy.js></script>

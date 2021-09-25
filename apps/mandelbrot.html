@@ -1,0 +1,68 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Mandelbrot</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Mandelbrot</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Mandelbrot
+# 
+for y0 range 300
+  cy = (y0 - 150) / 120
+  for x0 range 300
+    cx = (x0 - 220) / 120
+    x = 0
+    y = 0
+    set_rgb 0 0 0
+    for n range 128
+      if x * x + y * y > 4
+        set_rgb n / 16 0 0
+        break 1
+      .
+      h = x * x - y * y + cx
+      y = 2 * x * y + cy
+      x = h
+    .
+    move_pen x0 / 3 y0 / 3
+    draw_rect 0.4 0.4
+  .
+.
+
+`
+</script>
+<script src=easy.js></script>

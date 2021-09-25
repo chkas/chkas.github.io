@@ -1,0 +1,92 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Particles</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Particles</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Particles
+# 
+# inspired by slicker.me/javascript/particles.htm
+# 
+n_part = 40
+thres = 15
+# 
+on animate
+  clear_screen
+  for i range n_part
+    part_x = part_x[i]
+    part_y = part_y[i]
+    move_pen part_x part_y
+    draw_circle 0.3125
+    for j range i
+      dx = abs (part_x[j] - part_x)
+      if dx < thres
+        dy = abs (part_y[j] - part_y)
+        if dy < thres
+          dist = sqrt (dx * dx + dy * dy)
+          if dist < thres
+            set_linewidth (thres - dist) / 30
+            move_pen part_x part_y
+            draw_line part_x[j] part_y[j]
+          .
+        .
+      .
+    .
+    if part_x > 100 or part_x < 0
+      part_vx[i] = -part_vx[i]
+    .
+    if part_y > 100 or part_y < 0
+      part_vy[i] = -part_vy[i]
+    .
+    part_x[i] += part_vx[i]
+    part_y[i] += part_vy[i]
+  .
+.
+set_background 000
+set_color 999
+for i range n_part
+  part_x[] &= randomf * 100
+  part_y[] &= randomf * 100
+  part_vx[] &= (0.5 - randomf) / 3
+  part_vy[] &= (0.5 - randomf) / 3
+.
+
+`
+</script>
+<script src=easy.js></script>

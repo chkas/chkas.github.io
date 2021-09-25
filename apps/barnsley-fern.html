@@ -1,0 +1,69 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Barnsley fern</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Barnsley fern</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Barnsley fern
+#
+set_color 060
+for i range 200000
+  r = randomf
+  if r < 0.01
+    nx = 0
+    ny = 0.16 * y
+  elif r < 0.08
+    nx = 0.2 * x - 0.26 * y
+    ny = 0.23 * x + 0.22 * y + 1.6
+  elif r < 0.15
+    nx = -0.15 * x + 0.28 * y
+    ny = 0.26 * x + 0.24 * y + 0.44
+  else
+    nx = 0.85 * x + 0.04 * y
+    ny = -0.04 * x + 0.85 * y + 1.6
+  .
+  x = nx
+  y = ny
+  move_pen 50 + x * 15 100 - y * 10
+  draw_rect 0.3 0.3
+.
+
+`
+</script>
+<script src=easy.js></script>

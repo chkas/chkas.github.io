@@ -1,0 +1,197 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>Hangman</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>Hangman</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `# Hangman
+#
+if sysfunc "lang" = "de"
+  alpha$[] = str_chars "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ"
+  words$[] = [ "MAUS" "KATZE" "HUND" "ELEFANT" "PFERD" "NASHORN" "SPINNE" "AMEISE" "TIGER" "GEPARD" "SCHLANGE" "KUH" "SCHWEIN" "KROKODIL" "RATTE" "HUHN" "GIRAFFE" "SKORPION" "WAL" "DELFIN" "EIDECHSE" "FLIEGE" "RABE" "ADLER" "AMSEL" "SPECHT" "PINGUIN" "ESEL" "ZIEGE" "SCHAF" "ENTE" "SCHWAN" "MAULWURF" "BIENE" "WESPE" "ZECKE" "SCHNECKE" "FUCHS" "WOLF" "HAI" "FORELLE" "TAUBE" "BÄR" "DACHS" "EULE" "ERDMÄNNCHEN" "EICHHÖRNCHEN" "FROSCH" "FLEDERMAUS" "GOLDFISCH" "GEIER" "GANS" "GORILLA" "SCHIMPANSE" "HORNISSE" "HAMSTER" "HASE" "REH" "HIRSCH" "MURMELTIER" "IGEL" "KÄFER" "KAMEL" "KÄNGURU" "KREBS" "LÖWE" "LUCHS" "LAMA" "MOLCH" "NASHORN" "PAPAGEI" "PANDBÄR" "PAVIAN" "QUALLE" "REGENWURM" "SCHILDKRÖTE" "STINKTIER" "SEEPFERDCHEN" "ZEBRA" "BIBER" "ANTILOPE" "SEESTERN" "MUSCHEL" "CHAMÄLEON" "FAULTIER" "FLAMINGO" "KANINCHEN" "KOALABÄR" "KRÖTE" ]
+else
+  alpha$[] = str_chars "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  words$[] = [ "MOUSE" "CAT" "DOG" "ELEPHANT" "HORSE" "RHINO" "SPIDER" "ANT" "TIGER" "CHEETAH" "SNAKE" "COW" "PIG" "CROCODILE" "RAT" "MONKEY" "CHICKEN" "GIRAFFE" "SCORPION" "WHALE" "DOLPHIN" "LIZARD" "FLY" "RAVEN" "EAGLE" "BLACKBIRD" "WOODPECKER" "PENGUIN" "DONKEY" "GOAT" "SHEEP" "DUCK" "SWAN" "MOLE" "BEE" "WASP" "TICK" "SNAIL" "FOX" "WOLF" "SHARK" "TROUT" "DOVE" "BEAR" "BADGER" "OWL" "MEERKAT" "SQUIRREL" "FROG" "BAT" "GOLDFISH" "VULTURE" "GOOSE" "GORILLA" "CHIMPANZEE" "HORNET" "HAMSTER" "HARE" "DEER" "MARMOT" "HEDGEHOG" "BEETLE" "CAMEL" "KANGAROO" "CRAB" "LION" "LYNX" "LLAMA" "NEWT" "RHINO" "PARROT" "PANDA" "BABOON" "JELLYFISH" "EARTHWORM" "TURTLE" "SKUNK" "SEAHORSE" "ZEBRA" "BEAVER" "ANTELOPE" "STARFISH" "MUSSEL" "CHAMELEON" "SLOTH" "FLAMINGO" "RABBIT" "KOALA" "TOAD" ]
+.
+len sel[] len alpha$[]
+# 
+subr init
+  for i range len sel[]
+    sel[i] = 0
+  .
+  w$[] = str_chars words$[random len words$[]]
+  set_textsize 10
+  game_stat = 0
+.
+set_background 000
+func draw . .
+  clear_screen
+  set_linewidth 1
+  set_color 997
+  for i range len w$[]
+    move_pen 4 + i * 8 93
+    draw_line 10 + i * 8 93
+  .
+  try = 0
+  found = 0
+  for ind range len sel[]
+    r = ind div 5
+    c = ind mod 5
+    move_pen 3 + c * 11 3 + r * 12
+    set_color 040
+    draw_rect 10 11
+    set_color 997
+    k$ = alpha$[ind]
+    if sel[ind] = 0
+      move_pen 4.5 + c * 11 4 + r * 12
+      draw_text k$
+    else
+      in = 0
+      for pos range len w$[]
+        if w$[pos] = k$
+          in = 1
+          move_pen 4 + pos * 8 83
+          draw_text w$[pos]
+          found += 1
+        .
+      .
+      if in = 0
+        try += 1
+      .
+    .
+  .
+  # 
+  if try > 0
+    move_pen 65 60
+    draw_line 65 10
+  .
+  if try > 1
+    draw_line 85 10
+  .
+  if try > 2
+    draw_line 85 15
+  .
+  if try > 3
+    move_pen 85 20
+    draw_circle 6
+    set_color -2
+    draw_circle 5
+    set_color 997
+  .
+  if try > 4
+    move_pen 83 18
+    draw_circle 0.8
+  .
+  if try > 5
+    move_pen 87 18
+    draw_circle 0.8
+  .
+  if try > 6
+    set_linewidth 1
+    move_pen 84 22
+    draw_line 86 22
+  .
+  if try > 7
+    move_pen 85 26
+    draw_line 85 40
+  .
+  if try > 8
+    move_pen 78 27
+    draw_line 85 30
+  .
+  if try > 9
+    draw_line 92 27
+  .
+  if try > 10
+    move_pen 78 47
+    draw_line 85 40
+  .
+  if try > 11
+    draw_line 92 47
+    game_stat = 1
+    set_timer 1
+  .
+  if found = len w$[]
+    game_stat = 2
+    set_timer 0.5
+  .
+.
+on timer
+  game_stat = 3
+.
+func search_letter . .
+  c = (mouse_x - 3) div 11
+  r = (mouse_y - 3) div 12
+  ind = c + r * 5
+  if ind < len sel[] and sel[ind] = 0
+    sel[ind] = 1
+    call draw
+    if game_stat > 0
+      for i range len w$[]
+        move_pen 4 + i * 8 83
+        draw_text w$[i]
+      .
+      move_pen 60 70
+      set_textsize 8
+      if game_stat = 1
+        draw_text "SORRY!"
+        # play_sound [ 330 0.2 294 0.2 262 0.4 ]
+      else
+        draw_text "SUPER!"
+        # play_sound [ 440 0.1 494 0.1 523 0.2 ]
+      .
+    .
+  .
+.
+on mouse_down
+  if game_stat = 0
+    if mouse_x < 58 and mouse_x > 3 and mouse_y < 75 and mouse_y > 3
+      call search_letter
+    .
+  elif game_stat = 3
+    call init
+    call draw
+  .
+.
+call init
+call draw
+
+`
+</script>
+<script src=easy.js></script>

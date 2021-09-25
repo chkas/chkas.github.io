@@ -1,0 +1,65 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>pythagoras tree</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>pythagoras tree</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `func tree x1 y1 x2 y2 depth . .
+  if depth < 8
+    dx = x2 - x1
+    dy = y1 - y2
+    x3 = x2 - dy
+    y3 = y2 - dx
+    x4 = x1 - dy
+    y4 = y1 - dx
+    x5 = x4 + 0.5 * (dx - dy)
+    y5 = y4 - 0.5 * (dx + dy)
+    set_rgb 0.3 0.2 + depth / 18 0.1
+    draw_polygon [ x1 y1 x2 y2 x3 y3 x4 y4 ]
+    draw_polygon [ x3 y3 x4 y4 x5 y5 ]
+    call tree x4 y4 x5 y5 depth + 1
+    call tree x5 y5 x3 y3 depth + 1
+  .
+.
+set_rgb 0.3 0 0.1
+call tree 41 90 59 90 0
+
+`
+</script>
+<script src=easy.js></script>

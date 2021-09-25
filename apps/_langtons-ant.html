@@ -1,0 +1,70 @@
+<!doctype html><meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="example web applications">
+<link rel="icon" href="../icon.png" type="image/x-png">
+<title>langtons ant</title>
+
+<style>
+body{ background-color:#000; color:#ccc;}
+.lnk {
+	cursor: pointer;
+	text-decoration: underline;
+	display:inline;
+}
+canvas {
+	width:calc(100vh - 64px);
+	height:calc(100vh - 64px);
+	max-width:calc(100vw - 16px);
+	max-height:calc(100vw - 16px);
+	display:block;
+	margin:auto;
+	outline:none;
+}
+a {color:#888}
+
+</style>
+
+<b>langtons ant</b> - 
+<small>
+	<div id=edit class=lnk>Code</div> - <div id=install class=lnk>Install</div>
+	- <a href=.>More samples</a>
+</small>
+<p>
+<canvas></canvas>
+
+<script>
+edit.onclick = function() {
+	window.open('../ide/?code=' + encodeURIComponent(easyscript))
+}
+install.onclick = function() {
+	window.open('../run/?code=' + encodeURIComponent(easyscript))
+}
+
+easyscript = `len f[] 100 * 100
+func show . .
+  for y range 100
+    for x range 100
+      if f[y * 100 + x] = 1
+        move_pen x y
+        draw_rect 1 1
+      .
+    .
+  .
+.
+func run x y dir . .
+  dx[] = [ 0 1 0 -1 ]
+  dy[] = [ -1 0 1 0 ]
+  while x >= 0 and x < 100 and y >= 0 and y < 100
+    v = f[y * 100 + x]
+    f[y * 100 + x] = 1 - v
+    dir = (dir + 1 + 2 * v) mod 4
+    x += dx[dir]
+    y += dy[dir]
+  .
+.
+call run 70 40 0
+call show
+
+`
+</script>
+<script src=easy.js></script>
