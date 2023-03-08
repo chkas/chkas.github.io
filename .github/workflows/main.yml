@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install
+        run: sudo apt-get update        
         run: sudo apt-get install emscripten default-jdk        
       - name: Clone
         run: |
