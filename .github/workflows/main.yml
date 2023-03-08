@@ -27,7 +27,7 @@ jobs:
       - name: Install
         run: sudo apt-get install emscripten default-jdk        
       - name: Clone
-        run: \
+        run: |
           echo "Hello World!"
           wget https://github.com/chkas/easylang/archive/refs/heads/main.zip
           unzip main.zip
@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: './out/easylang'
+          path: '$HOME/out/easylang'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
