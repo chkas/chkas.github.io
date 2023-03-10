@@ -34,14 +34,15 @@ jobs:
         run: |
           echo "Hello World!"
           wget https://github.com/chkas/easylang/archive/refs/heads/main.zip
-          unzip main.zip
+          unzip -q main.zip
           mv easylang-main easylang
           cd easylang
           ./mk
+          rm -rf $HOME/easylang/wrk
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: '$HOME/out/easylang'
+          path: ~/out/easylang
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
