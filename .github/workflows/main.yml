@@ -32,6 +32,9 @@ jobs:
           mv closure-compiler-v$v.jar $HOME/closure-compiler.jar
       - name: Clone
         run: |
+          pwd
+          cd
+          pwd
           wget -q https://github.com/chkas/easylang/archive/refs/heads/main.zip
           unzip -q main.zip
           mv easylang-main easylang
