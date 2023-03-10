@@ -36,8 +36,8 @@ jobs:
           wget https://github.com/chkas/easylang/archive/refs/heads/main.zip
           unzip main.zip
           mv easylang-main easylang
-          cd easylang/main/web
-          make ide
+          cd easylang
+          ./mk
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
