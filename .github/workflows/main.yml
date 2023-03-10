@@ -26,7 +26,10 @@ jobs:
       - name: Install
         run: |
           sudo apt-get update        
-          sudo apt-get install emscripten default-jdk        
+          sudo apt-get install emscripten default-jdk
+          v=20220502
+          wget https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20220502/closure-compiler-v$v.jar
+          mv closure-compiler-v$v.jar $HOME/closure-compile.jar
       - name: Clone
         run: |
           echo "Hello World!"
