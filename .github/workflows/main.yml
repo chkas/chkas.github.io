@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: ["production"]
+    branches: ["main"]
 
   workflow_dispatch:
 
@@ -28,12 +28,11 @@ jobs:
           sudo apt-get update        
           sudo apt-get install emscripten default-jdk
           v=20220502
-          wget https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20220502/closure-compiler-v$v.jar
+          wget -q https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20220502/closure-compiler-v$v.jar
           mv closure-compiler-v$v.jar $HOME/closure-compiler.jar
       - name: Clone
         run: |
-          echo "Hello World!"
-          wget https://github.com/chkas/easylang/archive/refs/heads/main.zip
+          wget -q https://github.com/chkas/easylang/archive/refs/heads/main.zip
           unzip -q main.zip
           mv easylang-main easylang
           cd easylang
@@ -42,7 +41,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ~/out/easylang
+          path: out/easylang
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
