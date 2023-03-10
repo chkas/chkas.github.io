@@ -38,6 +38,7 @@ jobs:
           cd easylang
           ./mk
           rm -rf $HOME/easylang/wrk
+          cp easylang/misc/index.html $HOME/easylang/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
