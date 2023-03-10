@@ -1,1 +1,1 @@
-https://chkas.github.io/ide
+Deploying using *Github Actions* https://github.com/chkas/easylang to https://chkas.github.io
