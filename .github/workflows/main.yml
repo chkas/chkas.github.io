@@ -40,7 +40,7 @@ jobs:
           ./mk
           rm -rf $HOME/easylang/wrk
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v1
         with:
           path: ~/out/easylang
       - name: Deploy to GitHub Pages
