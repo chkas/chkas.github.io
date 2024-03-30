@@ -44,7 +44,7 @@ jobs:
           rm -rf $HOME/easylang/wrk
           cp $HOME/easylang/misc/index.html $HOME/out/easylang/
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: /home/runner/out/easylang
       - name: Deploy to GitHub Pages
