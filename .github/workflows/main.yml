@@ -42,7 +42,7 @@ jobs:
           ./mk
           (cd apps; ./mk_aoc)
           rm -rf $HOME/easylang/wrk
-          cp $HOME/easylang/misc/index.html $HOME/out/easylang/
+          cp $HOME/easylang/misc/root_easylang.html $HOME/out/easylang/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
