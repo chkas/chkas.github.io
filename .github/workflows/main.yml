@@ -25,11 +25,16 @@ jobs:
     steps:
       - name: Install
         run: |
-          sudo apt-get update        
-          sudo apt-get install emscripten default-jdk
-          v=20220502
-          wget -q https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20220502/closure-compiler-v$v.jar
-          mv closure-compiler-v$v.jar $HOME/closure-compiler.jar
+          sudo apt update        
+          sudo apt install default-jdk
+          curl -L https://github.com/emscripten-core/emsdk/archive/refs/heads/main.zip -o main.zip
+          unzip -q main.zip
+          mv emsdk-main emsdk
+          source emsdk/emsdk_env.sh
+          emsdk update ; emsdk list
+          # vers=latest
+          vers=3.1.70
+          emsdk install $vers ; emsdk activate $vers
       - name: Clone
         run: |
           pwd
@@ -38,6 +43,7 @@ jobs:
           wget -q https://github.com/chkas/easylang/archive/refs/heads/main.zip
           unzip -q main.zip
           mv easylang-main easylang
+          source emsdk/emsdk_env.sh
           cd easylang
           ./mk
           (cd apps; ./mk_aoc)
