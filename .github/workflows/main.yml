@@ -40,8 +40,9 @@ jobs:
         run: |
           cd
           pwd
-          wget -q https://github.com/chkas/easylang/archive/refs/heads/main.zip
+          curl -L https://github.com/chkas/easylang/archive/refs/heads/main.zip -o main.zip
           unzip -q main.zip
+          ls -l  
           mv easylang-main easylang
           source emsdk/emsdk_env.sh
           cd easylang
