@@ -53,4 +53,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: easylang
           directory: $HOME/out/easylang/
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
