@@ -1,0 +1,58 @@
+name: Deploy to Cloudfare
+
+on:
+  push:
+    branches: ["mainx"]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install
+        run: |
+          sudo apt update        
+          sudo apt install default-jdk
+          cd
+          curl -L https://github.com/emscripten-core/emsdk/archive/refs/heads/main.zip -o main.zip
+          unzip -q main.zip
+          mv emsdk-main emsdk
+          source emsdk/emsdk_env.sh
+          emsdk update ; emsdk list
+          # vers=latest
+          vers=3.1.70
+          emsdk install $vers ; emsdk activate $vers
+      - name: Clone
+        run: |
+          cd
+          pwd
+          curl -L https://github.com/chkas/easylang/archive/refs/heads/main.zip -o main.zip
+          unzip -q main.zip
+          ls -l  
+          mv easylang-main easylang
+          source emsdk/emsdk_env.sh
+          cd easylang
+          ./mk
+          (cd apps; ./mk_aoc)
+          rm -rf $HOME/easylang/wrk
+          cp $HOME/easylang/misc/root_easylang.html $HOME/out/easylang/index.html
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
+          directory: $HOME/out/easylang/
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
