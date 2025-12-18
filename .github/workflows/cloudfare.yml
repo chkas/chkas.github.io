@@ -47,12 +47,13 @@ jobs:
           cd
           rm -rf ./easylang/wrk
           cp ./easylang/misc/root_easylang.html ./out/easylang/index.html
+          mv ./out/easylang ./work/chkas.github.io/chkas.github.io/dist
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: easylang
-          directory: ./out/easylang/
+          directory: ./dist
           wranglerVersion: '3'
           
