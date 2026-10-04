@@ -30,6 +30,8 @@ jobs:
           java-version: '25'
       - name: Install
         run: |
+          java --version
+          which java
           #sudo apt update        
           #sudo apt install default-jdk
           cd
@@ -52,6 +54,7 @@ jobs:
           #mv easylang-main easylang
           source emsdk/emsdk_env.sh
           cd easylang
+          java --version
           ./mk
           (cd apps; ./mk_aoc)
           rm -rf $HOME/easylang/wrk
