@@ -33,6 +33,7 @@ for f in $files; do
 	dl="$dl $s/$f"
 done
 wget -N $dl
+cd ..
 
 # ------------  RUN --------------------
 mkdir -p run ; cd run
@@ -40,9 +41,10 @@ s=$srv/run
 dl="$s/index.html $s/sw.js $s/mfst.json $s/icon.png $s/icon.svg"
 dl="$dl $s/easyw$v.js $s/easyw$v.wasm"
 wget -N $dl
+cd ..
 
 # ------------  GAMES --------------------
 mkdir -p games ; cd games
 s=$srv/games
 wget -N $s/index.html
-
+cd ..
