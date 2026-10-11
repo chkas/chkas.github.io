@@ -45,7 +45,7 @@ jobs:
         run: |
           cd
           pwd
-          curl -L https://easylang.online/easylang_src.zip -o main.zip
+          curl -L https://easylang.online/source.zip -o main.zip
           #curl -L https://github.com/chkas/easylang/archive/refs/heads/main.zip -o main.zip
           unzip -q main.zip
           ls -l  
