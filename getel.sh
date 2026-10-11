@@ -48,3 +48,10 @@ mkdir -p games ; cd games
 s=$srv/games
 wget -N $s/index.html
 cd ..
+
+# ------------  BLOG --------------------
+mkdir -p blog ; cd blog
+s=$srv/blog
+wget -N $s/index.html $s/branchless.html $s/lucky_code.html $s/blqsort2.html $s/blqsort.html
+cd ..
+
