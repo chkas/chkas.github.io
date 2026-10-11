@@ -28,7 +28,7 @@ jobs:
           cd
           mkdir el
           cd el
-          sh $GITHUB_WORKSPACE/getel https://tiki.li
+          sh $GITHUB_WORKSPACE/getel.sh https://tiki.li
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
