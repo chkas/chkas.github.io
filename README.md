@@ -1,6 +1,4 @@
-Copying Easylang
-
-to 
+Copying **Easylang** to 
 
 https://chkas.github.io 
 
