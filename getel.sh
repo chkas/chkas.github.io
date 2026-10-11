@@ -2,7 +2,7 @@
 
 # copies Easylang website to current directory
 
-srv=https://tiki.li
+srv=https://easylang.online
 test $1 && srv=$1
 
 test $ZSH_VERSION && setopt SH_WORD_SPLIT
