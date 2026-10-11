@@ -1,9 +1,8 @@
-Deploying 
-
-https://github.com/chkas/easylang 
+Copying Easylang
 
 to 
 
 https://chkas.github.io 
 
-using *Github Actions* 
+using *Github Actions* and [this script](getel.sh)
+
